@@ -1,0 +1,21 @@
+---
+- name: add docker apt key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    id: 0EBFCD88
+
+- name: add docker apt repository
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_lsb.codename }} stable"
+    update_cache: true
+
+- name: install docker
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "docker-ce={{ docker.version }}"
+
+- name: install docker-py
+  pip:
+    name: docker-py

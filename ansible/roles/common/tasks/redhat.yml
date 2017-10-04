@@ -1,0 +1,19 @@
+---
+- name: add epel repo
+  yum_repository:
+    name: epel
+    description: EPEL YUM repo
+    baseurl: https://download.fedoraproject.org/pub/epel/$releasever/$basearch/
+    gpgkey: https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7
+    gpgcheck: true
+
+- name: install baseline dependencies
+  yum:
+    name: "{{item}}"
+  with_items:
+    - yum-utils
+    - python-pip
+    - python-requests
+    - ebtables
+    - socat
+    - ntp

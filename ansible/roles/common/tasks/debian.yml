@@ -1,0 +1,11 @@
+---
+- name: install baseline dependencies
+  apt:
+    name: "{{item}}"
+  with_items:
+    - apt-transport-https
+    - python-pip
+    - python-requests
+    - ebtables
+    - socat
+    - ntp

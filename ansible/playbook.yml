@@ -1,0 +1,18 @@
+---
+- hosts: all
+  gather_facts: false
+  become: yes
+  pre_tasks:
+  - name: install python
+    raw: bash -c "test -e /usr/bin/python || (apt -qqy update && apt install -qqy python python-pip)"
+    register: output
+    changed_when: output.stdout != ""
+
+- name: build image
+  hosts: all
+  become: yes
+  roles:
+    - common
+    - docker
+    - cni
+    - kubernetes

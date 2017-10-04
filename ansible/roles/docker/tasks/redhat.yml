@@ -1,0 +1,26 @@
+---
+- name: add docker dependencies
+  yum:
+    name: "{{ item }}"
+  with_items:
+    - device-mapper-persistent-data
+    - lvm2
+
+- name: add docker repo
+  yum_repository:
+    name: docker
+    description: Docker YUM repo
+    baseurl: https://download.docker.com/linux/centos/7/$basearch/stable/
+    gpgkey: https://download.docker.com/linux/centos/gpg
+    gpgcheck: true
+
+- name: install docker
+  yum:
+    name: docker-ce
+    state: present
+
+- name: start docker service
+  service:
+    name: docker
+    enabled: true
+    state: started
