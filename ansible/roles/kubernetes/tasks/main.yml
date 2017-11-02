@@ -1,52 +1,18 @@
 ---
-# FIXME: do some checksumming here!
-- name: download and install the kube binaries
-  get_url:
-    url: "https://storage.googleapis.com/kubernetes-release/release/{{ kubernetes.version }}/bin/linux/amd64/{{ item }}"
-    dest: "/usr/bin/{{ item }}"
-    mode: 0755
-  with_items:
-    - kubelet
-    - kubectl
-    - kubeadm
+- import_tasks: debian.yml
+  when: ansible_os_family == "Debian"
 
-- name: install the kubelet systemd service
-  template:
-    src: etc/systemd/system/kubelet.service
-    dest: /etc/systemd/system/kubelet.service
-    mode: 0600
+- import_tasks: redhat.yml
+  when: ansible_os_family == "RedHat"
 
-- name: create kubelet config directory
-  file:
-    name: /etc/systemd/system/kubelet.service.d
-    state: directory
-    mode: 0600
-
-- name: install the kubelet config
-  template:
-    src: "etc/systemd/system/kubelet.service.d/{{ item }}"
-    dest: "/etc/systemd/system/kubelet.service.d/{{ item }}"
-  items:
-    - 10-kubeadm.conf
-    - 20-cloud-provider.conf
+- name: ensure that the kubelet is running
+  service:
+    name: kubelet
+    state: started
+    enabled: true
 
 - name: cache docker images for kubeadm
   docker_image:
     name: "{{ item }}"
-  with_items:
-    - "gcr.io/google_containers/etcd-amd64:3.0.17"
-    - "gcr.io/google_containers/etcd:2.2.1"
-    - "gcr.io/google_containers/k8s-dns-dnsmasq-nanny-amd64:1.14.4"
-    - "gcr.io/google_containers/k8s-dns-kube-dns-amd64:1.14.4"
-    - "gcr.io/google_containers/k8s-dns-sidecar-amd64:1.14.4"
-    - "gcr.io/google_containers/kube-apiserver-amd64:{{ kubernetes.version }}"
-    - "gcr.io/google_containers/kube-controller-manager-amd64:{{ kubernetes.version }}"
-    - "gcr.io/google_containers/kube-proxy-amd64:{{ kubernetes.version }}"
-    - "gcr.io/google_containers/kube-scheduler-amd64:{{ kubernetes.version }}"
-    - "gcr.io/google_containers/kubernetes-dashboard-amd64:v1.6.3"
-    - "gcr.io/google_containers/pause-amd64:3.0"
-    - "quay.io/calico/cni:v1.9.1"
-    - "quay.io/calico/kube-policy-controller:v0.6.0"
-    - "quay.io/calico/node:v1.3.0"
-    - "weaveworks/weave-kube:2.0.4"
-    - "weaveworks/weave-npc:2.0.4"
+  with_items: kubernetes.cached_images
+  when: kubernetes.enable_cached_images|bool == True

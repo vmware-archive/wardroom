@@ -1,3 +1,6 @@
 ---
 docker:
-  version: "17.09.0~ce-0~ubuntu"
+  debian:
+    version: "1.13.1-0~ubuntu-xenial"
+  redhat:
+    version: "1.13.1"

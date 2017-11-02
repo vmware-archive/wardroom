@@ -1,0 +1,3 @@
+---
+- name: join nodes to masters
+  command: "/usr/bin/kubeadm join 10.10.10.3:6443 --token='{{ hostvars[groups['masters'][0]]['bootstrap_token'] }}'"

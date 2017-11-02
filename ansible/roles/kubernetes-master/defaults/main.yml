@@ -1,0 +1,3 @@
+---
+kubernetes_master:
+  ip_address: 10.10.10.3

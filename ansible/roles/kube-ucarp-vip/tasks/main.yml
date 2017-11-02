@@ -1,0 +1,5 @@
+---
+- name: drop kube-ucarp-vip static manifest
+  template:
+    dest: /etc/kubernetes/manifests/kube-ucarp-vip.yaml
+    src: etc/kubernetes/manifests/kube-ucarp-vip.yaml

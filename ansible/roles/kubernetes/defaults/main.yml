@@ -1,3 +1,5 @@
 ---
 kubernetes:
-  version: v1.8.0
+  version: "v1.8.0"
+  enable_cached_images: False
+  cached_images: []

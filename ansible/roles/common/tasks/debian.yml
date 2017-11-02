@@ -2,7 +2,10 @@
 - name: install baseline dependencies
   apt:
     name: "{{item}}"
+    state: latest
   with_items:
+    - openssh-client
+    - openssh-server
     - apt-transport-https
     - python-pip
     - python-requests

@@ -1,0 +1,103 @@
+---
+- name: update /etc/hosts to include cluster fqdn
+  lineinfile:
+    dest: /etc/hosts
+    line: "{{ kubernetes_master.ip_address }} k8s.example.com"
+    state: present
+
+- name: determine whether kubeadm needs to be run
+  stat:
+    path: /etc/kubernetes/manifests/kube-apiserver.yaml
+  register: kubeadm_apiserver_manifest
+
+- name: generate a kubeadm token
+  command: "/usr/bin/kubeadm token generate"
+  register: generated_token
+  run_once: True
+  delegate_to: "{{ groups['masters'][0] }}"
+  when: kubeadm_apiserver_manifest.stat.exists == False
+
+- name: run kubeadm init on primary master
+  shell: "/usr/bin/kubeadm init --apiserver-cert-extra-sans={{ kubernetes_master.ip_address }} --apiserver-advertise-address={{ kubernetes_master.ip_address }} --token={{ generated_token.stdout }}  --skip-preflight-checks"
+  delegate_to: "{{ groups['masters'][0] }}"
+  run_once: true
+  when: kubeadm_apiserver_manifest.stat.exists == False
+
+- name: create a bootstrap token
+  command: "/usr/bin/kubeadm token create --ttl=1h"
+  register: generated_token
+  run_once: True
+  delegate_to: "{{ groups['masters'][0] }}"
+  when: kubeadm_apiserver_manifest.stat.exists == True
+
+- name: set bootstrap token as fact
+  set_fact:
+    bootstrap_token: "{{ generated_token.stdout }}"
+  run_once: True
+  delegate_to: "{{ groups['masters'][0] }}"
+
+- name: slurp the ca certificate and key
+  slurp: src=/etc/kubernetes/pki/{{ item }}
+  with_items:
+    - apiserver.crt
+    - apiserver.key
+    - apiserver-kubelet-client.crt
+    - apiserver-kubelet-client.key
+    - ca.crt
+    - ca.key
+    - front-proxy-ca.crt
+    - front-proxy-ca.key
+    - front-proxy-client.crt
+    - front-proxy-client.key
+    - sa.key
+    - sa.pub
+  register: kube_pki
+  delegate_to: "{{ groups['masters'][0] }}"
+  run_once: true
+
+- name: create kubernetes pki directory
+  file:
+    dest: /etc/kubernetes/pki/
+    state: directory
+    owner: root
+    group: root
+
+- name: add kube pki assets
+  copy:
+    dest: "{{ item.source }}"
+    content: "{{ item.content | b64decode }}"
+    owner: root
+    group: root
+    mode: 0700
+  with_items: "{{ kube_pki.results }}"
+  when: inventory_hostname != groups['masters'][0]
+
+- name: initialize secondary masters
+  command: "/usr/bin/kubeadm init --apiserver-cert-extra-sans={{ kubernetes_master.ip_address }} --apiserver-advertise-address={{ kubernetes_master.ip_address }} --token={{ bootstrap_token }} --skip-preflight-checks"
+  when: kubeadm_apiserver_manifest.stat.exists == False and inventory_hostname != groups['masters'][0]
+
+- name: create kubernetes config directory
+  file:
+    dest: "{{ ansible_user_dir }}/.kube/"
+    state: directory
+    owner: "{{ ansible_user_id }}"
+    mode: 0600
+
+- name: copy kubernetes config to home directory
+  command: "cp /etc/kubernetes/admin.conf {{ ansible_user_dir}}/.kube/config"
+
+- name: set config permissions
+  file:
+    dest: "{{ ansible_user_dir}}/.kube/config"
+    owner: "{{ ansible_user_id }}"
+    mode: 0600
+    state: file
+
+- name: install CNI netowrking
+  command: "/usr/bin/kubectl apply -f https://docs.projectcalico.org/v2.6/getting-started/kubernetes/installation/hosted/kubeadm/1.6/calico.yaml"
+  run_once: True
+  delegate_to: "{{ groups['masters'][0] }}"
+
+
+
+

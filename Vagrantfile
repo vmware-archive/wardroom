@@ -8,12 +8,15 @@
 
 Vagrant.configure("2") do |config|
 
-  config.vm.define "xenial" do |web|
-    web.vm.box = "yk0/ubuntu-xenial"
+  config.vm.define "xenial" do |conf|
+    conf.vm.box = "ubuntu/xenial64"
+    conf.vm.provider "virtualbox" do |v|
+      v.customize ["modifyvm", :id, "--uartmode1", "disconnected"]
+    end
   end
 
-  config.vm.define "centos7" do |web|
-    web.vm.box = "centos/7"
+  config.vm.define "centos7" do |conf|
+    conf.vm.box = "centos/7"
   end
 
   config.vm.provision "ansible" do |ansible|
