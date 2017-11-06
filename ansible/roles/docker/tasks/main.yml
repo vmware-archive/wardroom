@@ -5,6 +5,11 @@
 - import_tasks: redhat.yml
   when: ansible_os_family == "RedHat"
 
+- name: create a service.d directory for config
+  file:
+    dest: /etc/systemd/system/docker.service.d
+    state: directory
+
 - name: install docker-py
   pip:
     name: docker-py
