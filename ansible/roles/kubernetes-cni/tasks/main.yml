@@ -1,0 +1,3 @@
+---
+- include_tasks: calico.yml
+  when: kubernetes_cni.plugin == "calico"

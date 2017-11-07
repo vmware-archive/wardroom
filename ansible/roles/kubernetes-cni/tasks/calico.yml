@@ -1,0 +1,11 @@
+---
+- name: install CNI netowrking
+  command: "/usr/bin/kubectl apply -f {{ kubernetes_cni.calico.manifest_url }}"
+  run_once: True
+  delegate_to: "{{ groups['masters'][0] }}"
+
+- name: install calicoctl
+  get_url:
+     url: "{{ kubernetes_cni.calico.calicoctl_url }}"
+     dest: /usr/bin/calicoctl
+     mode: 0755
