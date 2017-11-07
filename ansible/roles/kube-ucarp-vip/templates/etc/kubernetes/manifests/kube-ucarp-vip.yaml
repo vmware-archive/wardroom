@@ -15,8 +15,8 @@ spec:
     - name: UCARP_VID
       value: "41"
     - name: UCARP_ADDRESS
-      value: "10.10.10.3/25"
+      value: "10.10.10.3/24"
     - name: UCARP_PASSWORD
       value: "mypassword"
     - name: UCARP_DEVICE
-      value: "eth0``"
+      value: "enp0s8"
