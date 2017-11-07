@@ -65,6 +65,8 @@ def run_ansible(inventory_file, extra_args=[]):
     ansible_env['ANSIBLE_SSH_ARGS'] += " -F %s" % (ssh_tempfile[1])
     subprocess.call([
         "ansible-playbook",
+        "--extra-vars",
+        '{"vagrant_host": true}',
         "-i",
         inventory_file,
         "swizzle.yml"] + extra_args, env=ansible_env)

@@ -1,0 +1,4 @@
+---
+kubernetes_common:
+  api_ip: 10.10.10.3
+
