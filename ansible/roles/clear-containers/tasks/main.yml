@@ -1,0 +1,32 @@
+---
+- name: add the clear containers repo key
+  apt_key:
+    url: "http://download.opensuse.org/repositories/home:/clearlinux:/preview:/clear-containers-2.1/xUbuntu_{{ ansible_lsb.release }}/Release.key"
+    state: present
+
+- name: add the clear containers repo
+  apt_repository:
+    repo: "deb http://download.opensuse.org/repositories/home:/clearlinux:/preview:/clear-containers-2.1/xUbuntu_{{ ansible_lsb.release }}/ /"
+    update_cache: true
+    state: present
+
+- name: install clear container runtime
+  apt:
+    name: cc-oci-runtime
+    state: present
+
+- name: ensure cc-proxy is enabled
+  systemd:
+    name: cc-proxy
+    enabled: true
+    state: started
+
+- name: install the docker systemd add-on
+  template:
+    src: etc/systemd/system/docker.service.d/clr-containers.conf
+    dest: /etc/systemd/system/docker.service.d/clr-containers.conf
+  notify:
+    - restart docker
+
+#sudo sh -c "echo 'deb http://download.opensuse.org/repositories/home:/clearlinux:/preview:/clear-containers-2.1/xUbuntu_$(lsb_release -rs)/ /' >> /etc/apt/sources.list.d/cc-oci-runtime.list"
+#curl -fsSL http://download.opensuse.org/repositories/home:/clearlinux:/preview:/clear-containers-2.1/xUbuntu_$(lsb_release -rs)/Release.key | sudo apt-key add -
