@@ -92,12 +92,3 @@
     owner: "{{ ansible_user_id }}"
     mode: 0600
     state: file
-
-- name: install CNI netowrking
-  command: "/usr/bin/kubectl apply -f https://docs.projectcalico.org/v2.6/getting-started/kubernetes/installation/hosted/kubeadm/1.6/calico.yaml"
-  run_once: True
-  delegate_to: "{{ groups['masters'][0] }}"
-
-
-
-
