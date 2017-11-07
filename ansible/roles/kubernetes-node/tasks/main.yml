@@ -1,3 +1,9 @@
 ---
+- name: check whether we have joined this node
+  shell: "/usr/bin/docker ps | /bin/grep kube-proxy"
+  register: kube_proxy_running
+  ignore_errors: True
+
 - name: join nodes to masters
-  command: "/usr/bin/kubeadm join 10.10.10.3:6443 --token='{{ hostvars[groups['masters'][0]]['bootstrap_token'] }}'"
+  command: "/usr/bin/kubeadm join {{ kuberenetes_common.api_ip }}:6443 --token='{{ hostvars[groups['masters'][0]]['bootstrap_token'] }}'"
+  when: kube_proxy_running|failed
