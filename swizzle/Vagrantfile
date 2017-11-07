@@ -18,7 +18,9 @@ Vagrant.configure("2") do |config|
         :ip => "10.10.10.1#{i}",
         :libvirt__forward_mode => "none",
         :libvirt__network_name => "kubernetes",
-        :libvirt__netmask => "255.255.255.0"
+        :libvirt__netmask => "255.255.255.0",
+        :virtualbox__intnet => "kubenetwork"
+      subconfig.vm.provision "shell", inline: "ip route add 10.96.0.0/12 via 10.10.10.1#{i}"
       subconfig.vm.provider "virtualbox" do |v|
   	v.memory = 1024
   	v.customize ["modifyvm", :id, "--uartmode1", "disconnected"]
@@ -33,11 +35,13 @@ Vagrant.configure("2") do |config|
         :ip => "10.10.10.2#{i}",
         :libvirt__forward_mode => "none",
         :libvirt__network_name => "kubernetes",
-        :libvirt__netmask => "255.255.255.0"
+        :libvirt__netmask => "255.255.255.0",
+        :virtualbox__intnet => "kubenetwork"
+      subconfig.vm.provision "shell", inline: "ip route add 10.96.0.0/12 via 10.10.10.2#{i}"
       subconfig.vm.provider "virtualbox" do |v|
+        v.memory = 4096
         v.customize ["modifyvm", :id, "--uartmode1", "disconnected"]
       end
     end
   end
-
 end
