@@ -2,7 +2,7 @@ wardroom
 ========
 A tool for creating Kubernetes-ready base operating system images. wardroom leverages Packer to build golden images of Kubernetes deploymens across a wide variety of operating systems as well as image formats.
 
-supported operatins systems
+supported operating systems
 ---------------------------
 - Ubuntu 16.04 (Xenial)
 - CentOS 7
