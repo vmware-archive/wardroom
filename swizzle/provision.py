@@ -76,13 +76,15 @@ def generate_inventory(node_state={}):
     """ from node_state generate a dynamic ansible inventory.
         return temporary inventory file path """
     inventory = {
+        "etcd": [],
         "masters": [],
-        "nodes": []
+        "nodes": [],
     }
     for node, state in node_state.items():
         if state == "running":
             if node.startswith('master'):
                 inventory["masters"].append(node)
+                inventory["etcd"].append(node)
             elif node.startswith("node"):
                 inventory["nodes"].append(node)
 
@@ -104,7 +106,6 @@ def main():
     args, extra_args = parser.parse_known_args()
 
     node_state = vagrant_status()
-    inventory_file = generate_inventory(node_state)
 
     start_vms = False
     for node, state in node_state.items():
@@ -115,6 +116,8 @@ def main():
     if start_vms:
         vagrant_up()
 
+    node_state = vagrant_status()
+    inventory_file = generate_inventory(node_state)
     run_ansible(inventory_file, extra_args)
 
 

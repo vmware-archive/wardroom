@@ -1,3 +1,12 @@
 ---
 kubernetes_master:
-  ip_address: 10.10.10.3
+  kubeadm_config:
+    kubernetesVersion: 1.8.3
+    api:
+      advertiseAddress: "{{ kubernetes_common.api_ip }}"
+    apiServerCertSANs:
+    - "{{ kubernetes_common.api_fqdn }}"
+    - "{{ kubernetes_common.api_ip }}"
+    etcd:
+      endpoints: "{{ etcd_client_endpoints }}"
+    token: "{{ generated_token.stdout }}"

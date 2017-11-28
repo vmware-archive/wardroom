@@ -18,6 +18,14 @@
     - kubernetes-prereqs
     - kubernetes-common
 
+- name: install etcd
+  hosts: etcd
+  become: yes
+  roles:
+    - etcd
+  tags:
+    - etcd
+
 - name: add kube-ucarp-vip static pod
   hosts: masters
   become: yes

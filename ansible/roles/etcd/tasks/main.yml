@@ -1,0 +1,46 @@
+---
+- name: download and extract etcd binaries
+  unarchive:
+    remote_src: True
+    src: "{{ etcd_release_url }}"
+    dest: /tmp
+    creates: /usr/local/bin/etcd
+
+- name: move binaries into path
+  copy:
+    remote_src: True
+    src: "/tmp/etcd-{{ etcd.version }}-linux-amd64/{{ item }}"
+    dest: "/usr/local/bin/{{ item }}"
+  with_items:
+    - etcd
+    - etcdctl
+
+- name: set permissions on etcd binaries
+  file:
+    dest: "/usr/local/bin/{{ item }}"
+    mode: 0755
+    state: file
+  with_items:
+    - etcd
+    - etcdctl
+
+- name: create data directory
+  file:
+    dest: /var/lib/etcd
+    state: directory
+
+- name: etcd systemd template
+  template:
+    src: etc/systemd/system/etcd.service
+    dest: /etc/systemd/system/etcd.service
+  tags:
+    - etcd2
+  notify:
+    - restart etcd
+
+- name: enable and start the service
+  systemd:
+    name: etcd
+    daemon_reload: True
+    state: started
+    enabled: True
