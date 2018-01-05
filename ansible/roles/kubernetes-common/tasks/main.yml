@@ -2,7 +2,7 @@
 - set_fact:
     kubernetes_node_ip: "{{ hostvars[inventory_hostname]['ansible_'~item]['ipv4']['address'] }}"
   with_items:
-     - enp0s8
+    - enp0s8
 
 - name: drop vagrant node ip flag for the kubelet
   template:

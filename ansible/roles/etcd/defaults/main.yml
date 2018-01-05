@@ -1,0 +1,5 @@
+---
+etcd:
+  cluster_token: 444fddcc-beae-45bc-9da6-d941d446b595
+  interface: enp0s8
+  version: v3.2.10
