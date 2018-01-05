@@ -3,11 +3,17 @@
     kubernetes_node_ip: "{{ hostvars[inventory_hostname]['ansible_'~item]['ipv4']['address'] }}"
   with_items:
     - enp0s8
+  when: vagrant_host|bool == True
 
-- name: drop vagrant node ip flag for the kubelet
+- name: create kubelet config directory
+  file:
+    dest: /etc/systemd/system/kubelet.service.d
+    state: directory
+
+- name: drop extra args kubelet config
   template:
-    dest: /etc/systemd/system/kubelet.service.d/09-vagrant.conf
-    src: etc/systemd/system/kubelet.service.d/09-vagrant.conf
-  when: vagrant_host == True
+    dest: /etc/systemd/system/kubelet.service.d/09-extra-args.conf
+    src: etc/systemd/system/kubelet.service.d/09-extra-args.conf
   notify:
     - restart kubelet
+  when: vagrant_host|bool == True or kubernetes_common.kubelet_extra_args

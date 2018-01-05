@@ -3,3 +3,4 @@ kubernetes_common:
   api_fqdn: k8s.example.com
   api_ip: 10.10.10.3
   primary_interface: enp0s8
+  kubelet_extra_args: {}
