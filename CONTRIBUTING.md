@@ -5,7 +5,7 @@ that they are only submitting work that they have rights to, we are requiring
 everyone to acknowldge this by signing their work.
 
 Any copyright notices in this repos should specify the authors as "The
-heptio/aws-quickstart authors".
+project authors".
 
 To sign your work, just add a line like this at the end of your commit message:
 
