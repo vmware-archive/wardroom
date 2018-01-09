@@ -1,4 +1,9 @@
 ---
+- name: update apt cache
+  apt:
+    update_cache: True
+    cache_valid_time: 3600
+
 - name: install baseline dependencies
   apt:
     name: "{{item}}"
