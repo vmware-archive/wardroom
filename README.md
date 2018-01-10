@@ -23,3 +23,10 @@ $ vagrant up [xenial|centos7]
 ```
 
 The default Vagrant provisioner is Virtualbox, but other providers are possible by way of the vagrant-mutate plugin.
+
+dependencies
+------------
+
+[Vagrant][vagrant]
+
+[vagrant]: https://www.vagrantup.com/downloads.html
