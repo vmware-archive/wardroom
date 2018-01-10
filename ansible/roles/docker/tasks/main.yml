@@ -5,6 +5,18 @@
 - import_tasks: redhat.yml
   when: ansible_os_family == "RedHat"
 
+- name: create docker directory
+  file:
+    dest: /etc/docker
+    state: directory
+
+- name: configure the docker daemon
+  template:
+    dest: /etc/docker/daemon.json
+    src: etc/docker/daemon.json
+  notify:
+    - restart docker
+
 - name: create a service.d directory for config
   file:
     dest: /etc/systemd/system/docker.service.d

@@ -14,6 +14,7 @@
   apt:
     name: "{{ item }}"
   with_items:
-    - kubelet
-    - kubeadm
-    - kubectl
+    - "kubelet={{ kubernetes.version|kube_platform_version('debian') }}"
+    - "kubeadm={{ kubernetes.version|kube_platform_version('debian') }}"
+    - "kubectl={{ kubernetes.version|kube_platform_version('debian') }}"
+    - "kubernetes-cni={{kubernetes.cni_version|kube_platform_version('debian') }}"

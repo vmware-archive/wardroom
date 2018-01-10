@@ -10,7 +10,9 @@
 - name: install the kubernetes yum packages
   yum:
     name: "{{ item }}"
+    allow_downgrade: True
   with_items:
-    - kubelet
-    - kubeadm
-    - kubectl
+    - "kubelet-{{ kubernetes.version|kube_platform_version('redhat') }}"
+    - "kubeadm-{{ kubernetes.version|kube_platform_version('redhat') }}"
+    - "kubectl-{{ kubernetes.version|kube_platform_version('redhat') }}"
+    - "kubernetes-cni-{{kubernetes.cni_version|kube_platform_version('redhat')}}"

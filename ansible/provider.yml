@@ -8,13 +8,9 @@
     register: output
     changed_when: output.stdout != ""
 
-- name: build image
+- name: install provider pre-reqs
   hosts: all
   become: yes
   roles:
-    - role: common
-    - role: docker
-    - role: cni
-    - role: kubernetes
-    - role: packer-cleanup
-      when: packer is defined and packer|bool == True
+    - role: aws
+      when: provider is defined and provider|lower == "aws"

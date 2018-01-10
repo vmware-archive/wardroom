@@ -1,5 +1,6 @@
 ---
 kubernetes:
-  version: "v1.8.0"
+  version: "1.9.1-00"
+  cni_version: "0.6.0-00"
   enable_cached_images: False
   cached_images: []

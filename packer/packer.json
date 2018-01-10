@@ -1,0 +1,49 @@
+{
+  "variables": {
+    "aws_access_key": "",
+    "aws_secret_key": "",
+    "kubernetes_version": null,
+    "kubernetes_cni_version": null
+  },
+  "builders": [
+    {
+      "name": "ec2-ubuntu-16.04-{{user `kubernetes_version`}}-{{timestamp}}",
+      "type": "amazon-ebs",
+      "instance_type": "t2.small",
+      "source_ami": "{{user `ubuntu_16_04_ami`}}",
+      "ami_name": "ec2-ubuntu-16.04-{{user `kubernetes_version`}}-{{timestamp}}",
+      "access_key": "{{user `aws_access_key`}}",
+      "secret_key": "{{user `aws_secret_key`}}",
+      "ssh_username": "ubuntu"
+    },
+    {
+      "name": "ec2-centos-7.4-{{user `kubernetes_version`}}-{{timestamp}}",
+      "type": "amazon-ebs",
+      "instance_type": "t2.small",
+      "source_ami": "{{user `centos_7_4_ami`}}",
+      "ami_name": "ec2-ubuntu-xenial-rhel-{{user `kubernetes_version`}}-{{timestamp}}",
+      "access_key": "{{user `aws_access_key`}}",
+      "secret_key": "{{user `aws_secret_key`}}",
+      "ssh_username": "centos"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "ansible",
+      "playbook_file": "../ansible/playbook.yml",
+      "extra_arguments": [
+        "--extra-vars",
+        "{\"packer\": \"true\", \"kubernetes\": {\"version\": \"{{user `kubernetes_version`}}\", \"cni_version\": \"{{user `kubernetes_cni_version`}}\"}}"
+      ]
+    },
+    {
+      "type": "ansible",
+      "playbook_file": "../ansible/provider.yml",
+      "extra_arguments": [ "--extra-vars", "provider=aws" ],
+      "only": [
+        "ec2-ubuntu-16.04-{{user `kubernetes_version`}}-{{timestamp}}",
+        "ec2-centos-7.4-{{user `kubernetes_version`}}-{{timestamp}}"
+      ]
+    }
+  ]
+}

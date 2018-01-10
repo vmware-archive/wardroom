@@ -1,0 +1,14 @@
+---
+- name: cleanup packer artifacts
+  file:
+    state: absent
+    path: "{{ item }}"
+  with_items:
+    - /root/.ssh/authorized_keys
+    - "/home/{{ ansible_env.SUDO_USER }}/.ssh/authorized_keys"
+    - /etc/machine-id
+
+- name: replace machine-id
+  file:
+    dest: /etc/machine-id
+    state: touch
