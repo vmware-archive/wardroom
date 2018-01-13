@@ -27,7 +27,7 @@
     - etcd
 
 - name: add kube-ucarp-vip static pod
-  hosts: masters
+  hosts: masters:primary_master
   become: yes
   roles:
     - kube-ucarp-vip
