@@ -54,7 +54,7 @@
       "playbook_file": "../ansible/playbook.yml",
       "extra_arguments": [
         "--extra-vars",
-        "{\"packer\": \"true\", \"kubernetes\": {\"version\": \"{{user `kubernetes_version`}}\", \"cni_version\": \"{{user `kubernetes_cni_version`}}\"}}"
+        "{\"packer\": \"true\", \"common\": {\"upgrade_base\": \"true\" }, \"kubernetes\": {\"version\": \"{{user `kubernetes_version`}}\", \"cni_version\": \"{{user `kubernetes_cni_version`}}\"}}"
       ]
     },
     {

@@ -4,6 +4,11 @@
     update_cache: True
     cache_valid_time: 3600
 
+- name: perform a dist-upgrade
+  apt:
+    upgrade: dist
+  when: common.upgrade_base is defined and common.upgrade_base|bool == True
+
 - name: install baseline dependencies
   apt:
     name: "{{item}}"

@@ -7,6 +7,12 @@
     gpgkey: https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7
     gpgcheck: true
 
+- name: perform a yum update
+  yum:
+    name: '*'
+    state: latest
+  when: common.upgrade_base is defined and common.upgrade_base|bool == True
+
 - name: install baseline dependencies
   yum:
     name: "{{item}}"
