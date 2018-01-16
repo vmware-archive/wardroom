@@ -2,6 +2,7 @@
   "variables": {
     "aws_access_key": "",
     "aws_secret_key": "",
+    "build_version": null,
     "kubernetes_version": null,
     "kubernetes_cni_version": null
   },
@@ -14,7 +15,17 @@
       "ami_name": "ami-ubuntu-16.04-{{user `kubernetes_version`}}-{{timestamp}}",
       "access_key": "{{user `aws_access_key`}}",
       "secret_key": "{{user `aws_secret_key`}}",
-      "ssh_username": "ubuntu"
+      "ssh_username": "ubuntu",
+      "tags": {
+        "build_version": "{{user `build_version`}}",
+        "source_ami": "{{user `ubuntu_16_04_ami`}}",
+        "build_date": "{{isotime}}",
+        "distribution": "Ubuntu",
+        "distribution_release": "xenial",
+        "distribution_version": "16.04",
+        "kubernetes_version": "{{user `kubernetes_version`}}",
+        "kubernetes_cni_version": "{{user `kubernetes_cni_version`}}"
+      }
     },
     {
       "name": "ami-centos-7.4",
@@ -24,7 +35,17 @@
       "ami_name": "ami-ubuntu-xenial-rhel-{{user `kubernetes_version`}}-{{timestamp}}",
       "access_key": "{{user `aws_access_key`}}",
       "secret_key": "{{user `aws_secret_key`}}",
-      "ssh_username": "centos"
+      "ssh_username": "centos",
+      "tags": {
+        "build_version": "{{user `build_version`}}",
+        "source_ami": "{{user `centos_7_4_ami`}}",
+        "build_date": "{{isotime}}",
+        "distribution": "CentOS",
+        "distribution_release": "Core",
+        "distribution_version": "7.4",
+        "kubernetes_version": "{{user `kubernetes_version`}}",
+        "kubernetes_cni_version": "{{user `kubernetes_cni_version`}}"
+      }
     }
   ],
   "provisioners": [
