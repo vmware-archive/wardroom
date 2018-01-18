@@ -33,11 +33,10 @@ def copy_to_region(image, region):
         )
     local_ec2 = session.resource('ec2')
     new_image = local_ec2.Image(resp['ImageId'])
-    new_image.create_tags(Tags=image.tags)
-    
+
     return (new_image, region)
 
-def wait_for_ready(image, region):
+def make_public_and_tag(image, region, desc):
     while True:
         image.load()
         if image.state == 'available':
@@ -46,9 +45,14 @@ def wait_for_ready(image, region):
                     'Add': [{'Group': 'all'}]
                 }
             )
+            # Can only modify one attribute at a time
+            image.modify_attribute(Description={'Value': desc})
             logger.info("region {} ami {} is available".format(region, image.id))
             break
         time.sleep(5)
+
+def encode_desc(dict_):
+    return " ".join("{0}={1}".format(*item) for item in dict_.items())
 
 if __name__ == "__main__":
     args = parser.parse_args()
@@ -63,16 +67,18 @@ if __name__ == "__main__":
                for region in client.describe_regions()['Regions']
                if region['RegionName'] != args.region
               ]
+    regions = ['us-east-2']
+    regions.sort()
 
     logger.info("detected {} regions".format(len(regions)))
 
     image = default_region.resource('ec2').Image(args.ami_id)
+    description = encode_desc({i['Key']: i['Value'] for i in image.tags or []})
 
     # copy to all regions
     images = [copy_to_region(image, region) for region in regions]
     # Add the original
     images.append((image, args.region))
-
 
     # print out the YAML
     for (image, region) in images:
@@ -82,5 +88,5 @@ if __name__ == "__main__":
                 "that YAML can be pasted into the quickstart template.")
     # wait for all images to be available
     for (image, region) in images:
-        wait_for_ready(image, region)
+        make_public_and_tag(image, region, description)
 
