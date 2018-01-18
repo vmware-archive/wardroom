@@ -11,7 +11,7 @@ prerequisites
 To build the AMI, you need:
 
 - [Packer](https://www.packer.io/docs/installation.html)
-- [Ansbile](http://docs.ansible.com/ansible/latest/intro_installation.html) version >= 2.4.0.0
+- [Ansible](http://docs.ansible.com/ansible/latest/intro_installation.html) version >= 2.4.0.0
 - An AWS account
 - The AWS CLI installed and configured
 
@@ -28,8 +28,9 @@ You may limit which images build by adding the `-only=` flag to Packer.
 
 deployment
 ----------
-There is a helper script to aid in seeding built AMI's to all other AWS regions:
+There is a helper script to aid in seeding built AMI's to all other AWS regions.
+You can install them with `python3 setup.py install`.
 
 ```
-./deploy-ami.sh -r <SOURCE_REGION> -i <SOURCE_AMI> [-q]
+copy-ami -r <SOURCE_REGION> -i <SOURCE_AMI> [-q]
 ```
