@@ -67,7 +67,6 @@ if __name__ == "__main__":
                for region in client.describe_regions()['Regions']
                if region['RegionName'] != args.region
               ]
-    regions = ['us-east-2']
     regions.sort()
 
     logger.info("detected {} regions".format(len(regions)))
