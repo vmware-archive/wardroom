@@ -11,7 +11,7 @@ prerequisites
 To build the AMI, you need:
 
 - [Packer](https://www.packer.io/docs/installation.html)
-- [Ansbile](http://docs.ansible.com/ansible/latest/intro_installation.html) version >= 2.4.0.0
+- [Ansible](http://docs.ansible.com/ansible/latest/intro_installation.html) version >= 2.4.0.0
 - An AWS account
 - The AWS CLI installed and configured
 
@@ -31,5 +31,7 @@ deployment
 There is a helper script to aid in seeding built AMI's to all other AWS regions:
 
 ```
-./deploy-ami.sh -r <SOURCE_REGION> -i <SOURCE_AMI> [-q]
+./deploy-ami.py -r <SOURCE_REGION> -i <SOURCE_AMI> [-q]
 ```
+
+The script needs `boto3`: `pip3 install boto3`
