@@ -28,10 +28,9 @@ You may limit which images build by adding the `-only=` flag to Packer.
 
 deployment
 ----------
-There is a helper script to aid in seeding built AMI's to all other AWS regions:
+There is a helper script to aid in seeding built AMI's to all other AWS regions.
+You can install them with `python3 setup.py install`.
 
 ```
-./deploy-ami.py -r <SOURCE_REGION> -i <SOURCE_AMI> [-q]
+copy-ami -r <SOURCE_REGION> -i <SOURCE_AMI> [-q]
 ```
-
-The script needs `boto3`: `pip3 install boto3`
