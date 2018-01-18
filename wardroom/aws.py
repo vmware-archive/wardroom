@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-
-import argparse
 import logging
 import sys
 import time
@@ -17,10 +14,6 @@ yaml_template ='''
       '64': {}
 '''.strip('\r\n')
 
-parser = argparse.ArgumentParser(description='Copy an image to all available regions')
-parser.add_argument('-r', '--region', default='us-east-1')
-parser.add_argument('-i', '--ami-id', required=True)
-parser.add_argument('-q', '--quiet', action='store_true')
 
 def copy_to_region(image, region):
     session = boto3.session.Session(region_name=region)
@@ -35,6 +28,7 @@ def copy_to_region(image, region):
     new_image = local_ec2.Image(resp['ImageId'])
 
     return (new_image, region)
+
 
 def make_public_and_tag(image, region, desc):
     while True:
@@ -51,12 +45,12 @@ def make_public_and_tag(image, region, desc):
             break
         time.sleep(5)
 
+
 def encode_desc(dict_):
     return " ".join("{0}={1}".format(*item) for item in dict_.items())
 
-if __name__ == "__main__":
-    args = parser.parse_args()
 
+def copy_ami(args):
     if args.quiet:
         logger.setLevel(logging.WARN)
 

@@ -1,3 +1,6 @@
 *.retry
 .vagrant
 *.pyc
+build/
+dist/
+*.egg-info
