@@ -54,13 +54,17 @@
       "playbook_file": "../ansible/playbook.yml",
       "extra_arguments": [
         "--extra-vars",
-        "{\"packer\": \"true\", \"kubernetes\": {\"version\": \"{{user `kubernetes_version`}}\", \"cni_version\": \"{{user `kubernetes_cni_version`}}\"}}"
+        "{\"packer\": \"true\", \"kubernetes\": {\"version\": \"{{user `kubernetes_version`}}\", \"cni_version\": \"{{user `kubernetes_cni_version`}}\"}}",
+        "--ssh-common-args", "-o IdentitiesOnly=yes"
       ]
     },
     {
       "type": "ansible",
       "playbook_file": "../ansible/provider.yml",
-      "extra_arguments": [ "--extra-vars", "provider=aws" ],
+      "extra_arguments": [
+            "--extra-vars", "provider=aws",
+            "--ssh-common-args", "-o IdentitiesOnly=yes"
+        ],
       "only": [
         "ami-ubuntu-16.04",
         "ami-centos-7.4"
