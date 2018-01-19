@@ -1,6 +1,6 @@
 wardroom
 ========
-A tool for creating Kubernetes-ready base operating system images. wardroom leverages [Packer](https://github.com/hashicorp/packer) to build golden images of Kubernetes deploymens across a wide variety of operating systems as well as image formats. This repo is the basis for the images used in Heptio's [aws-quickstart](https://github.com/heptio/ws-quickstart).
+A tool for creating Kubernetes-ready base operating system images. wardroom leverages [Packer](https://github.com/hashicorp/packer) to build golden images of Kubernetes deployments across a wide variety of operating systems as well as image formats. This repo is the basis for the images used in Heptio's [aws-quickstart](https://github.com/heptio/ws-quickstart).
 
 supported operating systems
 ---------------------------
