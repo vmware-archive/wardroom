@@ -20,11 +20,19 @@ build the AMI's
 From this directory, simply run:
 
 ```
-/path/to/packer build -var-file <YOUR REGION>.json -var kubernetes_version=<YOUR K8S VERSION> -var kubernetes_cni_version=<YOUR K8S CNI VERSION> -var build_version=`git rev-parse HEAD` packer.json
+$ /path/to/packer build -var-file <YOUR REGION>.json -var kubernetes_version=<YOUR K8S VERSION> -var kubernetes_cni_version=<YOUR K8S CNI VERSION> -var build_version=`git rev-parse HEAD` packer.json
 ```
 This will build AMI images in the us-east AWS region (additional region support to follow).
 
 You may limit which images build by adding the `-only=` flag to Packer.
+
+build raw images
+----------------
+From this directory, run:
+```
+$ cloud-localds cloud.img cloud.cfg
+$ /path/to/packer -var kubernetes_version=<YOUR K8S VERSION> -var kubernetes_cni_version=<YOUR K8S CNI VERSION> -var build_version=`git rev-parse HEAD` packer.json
+```
 
 deployment
 ----------
