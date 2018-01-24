@@ -20,6 +20,7 @@ import os
 import re
 import subprocess
 import tempfile
+import random
 import sys
 import ConfigParser
 
@@ -65,8 +66,6 @@ def run_ansible(inventory_file, extra_args=[]):
     ansible_env['ANSIBLE_SSH_ARGS'] += " -F %s" % (ssh_tempfile[1])
     subprocess.call([
         "ansible-playbook",
-        "--extra-vars",
-        '{"vagrant_host": true}',
         "-i",
         inventory_file,
         "swizzle.yml"] + extra_args, env=ansible_env)
@@ -77,6 +76,7 @@ def generate_inventory(node_state={}):
         return temporary inventory file path """
     inventory = {
         "etcd": [],
+        "primary_master": [],
         "masters": [],
         "nodes": [],
     }
@@ -87,6 +87,7 @@ def generate_inventory(node_state={}):
                 inventory["etcd"].append(node)
             elif node.startswith("node"):
                 inventory["nodes"].append(node)
+    inventory['primary_master'] = [random.choice(inventory['masters'])]
 
     parser = ConfigParser.ConfigParser(allow_no_value=True)
     for key, vals in inventory.items():
@@ -97,6 +98,10 @@ def generate_inventory(node_state={}):
     temp_file = tempfile.mkstemp()[1]
     with open(temp_file, 'w') as fh:
         parser.write(fh)
+
+    print "Running with inventory:\n"
+    parser.write(sys.stdout)
+    print
 
     return temp_file
 

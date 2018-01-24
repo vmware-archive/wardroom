@@ -4,6 +4,7 @@
     dest: /etc/hosts
     line: "{{ kubernetes_common.api_ip }} {{ kubernetes_common.api_fqdn }}"
     state: present
+  when: kubernetes_common.api_ip is defined and kubernetes_common.api_fqdn is defined
 
 - name: determine whether kubeadm needs to be run
   stat:
@@ -14,12 +15,11 @@
   command: "/usr/bin/kubeadm token generate"
   register: generated_token
   run_once: True
-  delegate_to: "{{ groups['masters'][0] }}"
-  when: kubeadm_apiserver_manifest.stat.exists == False
+  delegate_to: "{{ groups['primary_master']|first }}"
 
 - name: drop kubeadm template
   run_once: True
-  delegate_to: "{{ groups['masters'][0] }}"
+  delegate_to: "{{ groups['primary_master']|first }}"
   template:
     src: etc/kubernetes/kubeadm.conf
     dest: /etc/kubernetes/kubeadm.conf
@@ -27,7 +27,7 @@
 
 - name: run kubeadm init on primary master
   shell: "/usr/bin/kubeadm init --config=/etc/kubernetes/kubeadm.conf  --skip-preflight-checks"
-  delegate_to: "{{ groups['masters'][0] }}"
+  delegate_to: "{{ groups['primary_master']|first }}"
   run_once: true
   when: kubeadm_apiserver_manifest.stat.exists == False
 
@@ -48,7 +48,7 @@
     - pki/sa.key
     - pki/sa.pub
   register: kube_pki
-  delegate_to: "{{ groups['masters'][0] }}"
+  delegate_to: "{{ groups['primary_master']|first }}"
   run_once: true
 
 - name: create kubernetes pki directory
@@ -59,6 +59,7 @@
     group: root
 
 - name: add kube pki assets
+  no_log: True
   copy:
     dest: "{{ item.source }}"
     content: "{{ item.content | b64decode }}"
@@ -66,11 +67,11 @@
     group: root
     mode: 0700
   with_items: "{{ kube_pki.results }}"
-  when: inventory_hostname != groups['masters'][0]
+  when: inventory_hostname != groups['primary_master']|first
 
 - name: initialize secondary masters
   command: "/usr/bin/kubeadm init --config=/etc/kubernetes/kubeadm.conf --skip-preflight-checks"
-  when: kubeadm_apiserver_manifest.stat.exists == False and inventory_hostname != groups['masters'][0]
+  when: kubeadm_apiserver_manifest.stat.exists == False and inventory_hostname != groups['primary_master']|first
 
 - name: create kubernetes config directory
   file:
