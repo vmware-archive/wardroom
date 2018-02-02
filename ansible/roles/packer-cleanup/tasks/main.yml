@@ -7,6 +7,9 @@
     - /root/.ssh/authorized_keys
     - "/home/{{ ansible_env.SUDO_USER }}/.ssh/authorized_keys"
     - /etc/machine-id
+    - /var/lib/cloud
+    - /var/log/cloud-init.log
+    - /var/log/cloud-init-output.log
 
 - name: replace machine-id
   file:
