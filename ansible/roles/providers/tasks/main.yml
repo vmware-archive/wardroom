@@ -1,0 +1,4 @@
+---
+- include_tasks: aws.yml
+  when: provider_name.lower() == 'aws'
+

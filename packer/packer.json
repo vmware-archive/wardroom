@@ -60,20 +60,6 @@
         "--extra-vars",
         "{\"packer\": \"true\", \"common\": {\"upgrade_base\": \"true\" }, \"kubernetes\": {\"version\": \"{{user `kubernetes_version`}}\", \"cni_version\": \"{{user `kubernetes_cni_version`}}\"}}"
       ]
-    },
-    {
-      "type": "ansible",
-      "playbook_file": "../ansible/provider.yml",
-      "ansible_env_vars": [
-        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -o IdentitiesOnly=yes'"
-      ],
-      "extra_arguments": [
-        "--extra-vars", "provider=aws"
-      ],
-      "only": [
-        "ami-ubuntu-16.04",
-        "ami-centos-7.4"
-      ]
     }
   ]
 }
