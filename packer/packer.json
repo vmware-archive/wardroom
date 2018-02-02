@@ -65,7 +65,7 @@
       "type": "ansible",
       "playbook_file": "../ansible/provider.yml",
       "ansible_env_vars": [
-        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -o IdentitiesOnly=yes"
+        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} -o IdentitiesOnly=yes'"
       ],
       "extra_arguments": [
         "--extra-vars", "provider=aws"
