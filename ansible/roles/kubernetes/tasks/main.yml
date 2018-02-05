@@ -11,6 +11,13 @@
     state: started
     enabled: true
 
+- name: add kubelet extra args unit file
+  template:
+    dest: /etc/systemd/system/kubelet.service.d/10-extra-args.conf
+    src: etc/systemd/system/kubelet.service.d/10-extra-args.conf
+  notify:
+    - restart kubelet
+
 - name: cache docker images for kubeadm
   docker_image:
     name: "{{ item }}"
