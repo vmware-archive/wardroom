@@ -14,7 +14,7 @@
   roles:
     - role: common
     - role: docker
-    - role: cni
     - role: kubernetes
+    - role: providers
     - role: packer-cleanup
-      when: packer is defined and packer|bool == True
+      when: packer_build_name is defined
