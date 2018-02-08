@@ -1,0 +1,15 @@
+---
+- name: set ipv4 routing
+  sysctl:
+    name: net.bridge.bridge-nf-call-iptables
+    value: 1
+    sysctl_set: yes
+    state: present
+    reload: yes
+
+- name: install CNI networking
+  command: "/usr/bin/kubectl apply -f {{ kubernetes_cni.flannel.manifest_url }}"
+  run_once: True
+  delegate_to: "{{ groups['primary_master']|first }}"
+  retries: 10
+  delay: 5
