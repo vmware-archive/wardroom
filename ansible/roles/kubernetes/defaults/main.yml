@@ -4,3 +4,7 @@ kubernetes:
   cni_version: "0.6.0-00"
   enable_cached_images: False
   cached_images: []
+  apt_key_url: "https://packages.cloud.google.com/apt/doc/apt-key.gpg"
+  apt_repo_string: "deb http://apt.kubernetes.io/ kubernetes-{{ ansible_distribution_release|lower }} main"
+  yum_baseurl: "https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64"
+  yum_gpgkey: "https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg"
