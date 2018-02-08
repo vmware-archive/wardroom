@@ -47,6 +47,31 @@
         "kubernetes_version": "{{user `kubernetes_version`}}",
         "kubernetes_cni_version": "{{user `kubernetes_cni_version`}}"
       }
+    },
+    {
+        "name": "raw-ubuntu-16.04",
+        "type": "qemu",
+        "iso_url": "http://mirrors.servercentral.com/ubuntu-cloud-images/xenial/current/xenial-server-cloudimg-amd64-disk1.img",
+        "iso_checksum": "bdfcdcba8c31dba48b5d5482ae922d153a4d46b2",
+        "iso_checksum_type": "sha1",
+        "disk_image": true,
+        "disk_size": 2500,
+        "format": "raw",
+        "headless": true,
+        "disk_compression": true,
+        "ssh_username": "ubuntu",
+        "ssh_password": "ubuntu",
+        "disk_interface": "virtio",
+        "accelerator": "none",
+        "qemuargs": [
+            "-no-kvm",
+            [ "-machine", "pc" ],
+            [ "-m", "2048M" ],
+            ["-smp", "2"],
+            ["-fda", "cloud.img"],
+            ["-serial", "mon:stdio"]
+        ],
+        "vnc_bind_address": "0.0.0.0"
     }
   ],
   "provisioners": [
