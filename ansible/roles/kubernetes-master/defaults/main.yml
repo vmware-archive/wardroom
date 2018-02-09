@@ -1,12 +1,12 @@
 ---
 kubernetes_master:
   kubeadm_config:
-    kubernetesVersion: 1.8.3
+    kubernetesVersion: 1.9.2
     api:
-      advertiseAddress: "{{ kubernetes_common.api_ip }}"
+      controlPlaneEndpoint: "{{ kubernetes_common.api_fqdn }}"
+      advertiseAddress: "{{ kubernetes_node_ip }}"
     apiServerCertSANs:
     - "{{ kubernetes_common.api_fqdn }}"
     - "{{ kubernetes_common.api_ip }}"
     etcd:
       endpoints: "{{ etcd_client_endpoints }}"
-    token: "{{ generated_token.stdout }}"
