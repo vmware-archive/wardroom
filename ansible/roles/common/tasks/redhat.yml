@@ -11,7 +11,7 @@
   yum:
     name: '*'
     state: latest
-  when: common.upgrade_base is defined and common.upgrade_base|bool == True
+  when: common_upgrade_base | bool
 
 - name: install baseline dependencies
   yum:

@@ -1,3 +1,2 @@
 ---
-common:
-  upgrade_base: False
+common_upgrade_base: False

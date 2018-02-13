@@ -14,7 +14,7 @@
     name: "{{ item }}"
     state: present
   with_items:
-    - "docker-ce={{ docker.debian.version }}"
+    - "docker-ce={{ docker_debian_version }}"
 
 - name: install docker-py
   pip:
