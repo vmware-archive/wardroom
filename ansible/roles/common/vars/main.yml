@@ -1,0 +1,2 @@
+---
+common_upgrade_base_defined: "{{ common is defined and 'upgrade_base' in common }}"

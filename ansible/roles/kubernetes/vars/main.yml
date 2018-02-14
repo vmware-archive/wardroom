@@ -1,0 +1,9 @@
+---
+kubernetes_version_defined: "{{ kubernetes is defined and 'version' in kubernetes }}"
+kubernetes_cni_version_defined: "{{ kubernetes is defined and 'cni_version' in kubernetes }}"
+kubernetes_enable_cached_images_defined: "{{ kubernetes is defined and 'enable_cached_images' in kubernetes }}"
+kubernetes_cached_images_defined: "{{ kubernetes is defined and 'cached_images' in kubernetes }}"
+kubernetes_apt_key_url_defined: "{{ kubernetes is defined and 'apt_key_url' in kubernetes }}"
+kubernetes_apt_repo_string_defined: "{{ kubernetes is defined and 'apt_repo_string' in kubernetes }}"
+kubernetes_yum_baseurl_defined: "{{ kubernetes is defined and 'yum_baseurl' in kubernetes }}"
+kubernetes_yum_gpgkey_defined: "{{ kubernetes is defined and 'yum_gpgkey' in kubernetes }}"
