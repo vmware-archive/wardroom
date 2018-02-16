@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from distutils.core import setup
+from setuptools import setup
 
 setup(name="Wardroom packer helpers",
       version="0.1",
@@ -8,5 +8,5 @@ setup(name="Wardroom packer helpers",
       author="Heptio",
       url="https://github.com/heptiolabs/wardroom",
       scripts=["copy-ami"],
-      requires=['boto3 (>=1.5)']
+      install_requires=['boto3 >= 1.5']
 )
