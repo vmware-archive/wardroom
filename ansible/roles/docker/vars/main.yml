@@ -1,0 +1,3 @@
+---
+docker_debian_version_defined: "{{ docker is defined and 'debian' in docker and 'version' in docker.debian }}"
+docker_redhat_version_defined: "{{ docker is defined and 'redhat' in docker and 'version' in docker.redhat }}"

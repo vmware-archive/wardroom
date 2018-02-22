@@ -26,6 +26,15 @@ This will build AMI images in the us-east AWS region (additional region support 
 
 You may limit which images build by adding the `-only=` flag to Packer.
 
+testing the AMIs
+----------------
+```
+wget https://dl.k8s.io/v1.9.3/kubernetes-test.tar.gz
+tar -zxvf kubernetes-test.tar.gz
+cd kubernetes/platforms/linux/amd64
+sudo ./ginkgo --nodes=8 --flakeAttempts=2 --focus="\[Conformance\]" --skip="\[Flaky\]|\[Serial\]" ./e2e_node.test -- --k8s-bin-dir=/usr/bin
+```
+
 deployment
 ----------
 There is a helper script to aid in seeding built AMI's to all other AWS regions.

@@ -20,7 +20,7 @@
     state: present
     allow_downgrade: True
   with_items:
-    - "docker-ce-selinux-{{docker.redhat.version}}"
+    - "docker-ce-selinux-{{docker_redhat_version}}"
 
 - name: start docker service
   service:

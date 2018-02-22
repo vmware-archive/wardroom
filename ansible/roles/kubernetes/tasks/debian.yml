@@ -1,12 +1,12 @@
 ---
 - name: add the kubernetes apt repo key
   apt_key:
-    url: "{{ kubernetes.apt_key_url }}"
+    url: "{{ kubernetes_apt_key_url }}"
     state: present
 
 - name: add the kubernetes apt repo
   apt_repository:
-    repo: "{{ kubernetes.apt_repo_string }}"
+    repo: "{{ kubernetes_apt_repo_string }}"
     update_cache: True
     state: present
 
@@ -14,7 +14,7 @@
   apt:
     name: "{{ item }}"
   with_items:
-    - "kubelet={{ kubernetes.version|kube_platform_version('debian') }}"
-    - "kubeadm={{ kubernetes.version|kube_platform_version('debian') }}"
-    - "kubectl={{ kubernetes.version|kube_platform_version('debian') }}"
-    - "kubernetes-cni={{kubernetes.cni_version|kube_platform_version('debian') }}"
+    - "kubelet={{ kubernetes_version | kube_platform_version('debian') }}"
+    - "kubeadm={{ kubernetes_version | kube_platform_version('debian') }}"
+    - "kubectl={{ kubernetes_version | kube_platform_version('debian') }}"
+    - "kubernetes-cni={{kubernetes_cni_version | kube_platform_version('debian') }}"

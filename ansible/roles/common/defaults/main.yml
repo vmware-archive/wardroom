@@ -1,3 +1,2 @@
 ---
-common:
-  upgrade_base: False
+common_upgrade_base: "{{ common.upgrade_base if common_upgrade_base_defined else False }}"

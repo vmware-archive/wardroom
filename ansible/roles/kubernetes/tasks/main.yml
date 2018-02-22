@@ -14,8 +14,8 @@
 - name: cache docker images for kubeadm
   docker_image:
     name: "{{ item }}"
-  with_items: kubernetes.cached_images
-  when: kubernetes.enable_cached_images is defined and kubernetes.enable_cached_images|bool == True
+  with_items: kubernetes_cached_images
+  when: kubernetes_enable_cached_images | bool
 
 - name: set kubernetes version file
   template:
