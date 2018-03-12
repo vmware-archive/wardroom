@@ -1,6 +1,24 @@
+<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
+**Table of Contents**
+
+- [building images](#building-images)
+- [Amazon](#amazon)
+    - [aws-quickstart](#aws-quickstart)
+    - [prerequisites](#prerequisites)
+    - [build the AMI's](#build-the-amis)
+    - [testing the AMIs](#testing-the-amis)
+    - [deployment](#deployment)
+- [Google Cloud](#google-cloud)
+    - [build GCP images](#build-gcp-images)
+
+<!-- markdown-toc end -->
+
 building images
 ===============
 Building images for Kubernetes is easily accomplished with the [Packer](https://github.com/hashicorp/packer) and the templates found in this directory.
+
+Amazon
+======
 
 aws-quickstart
 --------------
@@ -43,3 +61,29 @@ You can install them with `python3 setup.py install`.
 ```
 copy-ami -r <SOURCE_REGION> -i <SOURCE_AMI> [-q]
 ```
+
+Google Cloud
+============
+
+build GCP images
+-----------------
+
+[Create a GCP service account][packergcp].
+
+You'll need to download the credential file after creating your account. Make
+sure you don't commit it, it contains secrets.
+
+You'll also need to make note of the "project ID" you wish to run the container
+in. It's a string, and you can find it at the top of the Google Cloud Console,
+or with `gcloud projects list`.
+
+Then, call packer:
+
+```
+GOOGLE_APPLICATION_CREDENTIALS=<YOUR CREDENTIAL FILE> packer build -var kubernetes_version=<YOUR K8S VERSION> -var kubernetes_cni_version=<YOUR K8S CNI VERSION> -var build_version=`git rev-parse HEAD` -var project_id=<PROJECT_ID> -only gcp-ubuntu-16.04 packer.json
+```
+
+Google Cloud doesn't have public images in the same way that Amazon does, but
+you can create VMs from any image in a project you have access to.
+
+[packergcp]: https://www.packer.io/docs/builders/googlecompute.html#running-without-a-compute-engine-service-account
