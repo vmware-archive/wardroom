@@ -22,3 +22,5 @@
     - ebtables
     - socat
     - ntp
+    - jq
+    - nfs-client

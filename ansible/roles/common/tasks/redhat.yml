@@ -23,3 +23,5 @@
     - ebtables
     - socat
     - ntp
+    - jq
+    - nfs-utils
