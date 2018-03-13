@@ -1,2 +1,4 @@
 venv
 *.egg-info
+packer_cache
+packer_output

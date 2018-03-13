@@ -5,11 +5,14 @@
     "build_version": null,
     "kubernetes_version": "1.9.3-00",
     "kubernetes_cni_version": "0.6.0-00",
-    "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}"
+    "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
+    "vagrant_cloud_box_version": "1.0.{{timestamp}}",
+    "vagrant_cloud_centos_tag": "heptio/quickstart-centos",
+    "vagrant_cloud_ubuntu_tag": "heptio/quickstart-ubuntu"
   },
   "builders": [
     {
-      "name": "ami-ubuntu-16.04",
+      "name": "ami-ubuntu",
       "type": "amazon-ebs",
       "instance_type": "t2.small",
       "source_ami": "{{user `ubuntu_16_04_ami`}}",
@@ -29,7 +32,7 @@
       }
     },
     {
-      "name": "ami-centos-7.4",
+      "name": "ami-centos",
       "type": "amazon-ebs",
       "instance_type": "t2.small",
       "source_ami": "{{user `centos_7_4_ami`}}",
@@ -47,6 +50,52 @@
         "kubernetes_version": "{{user `kubernetes_version`}}",
         "kubernetes_cni_version": "{{user `kubernetes_cni_version`}}"
       }
+    },
+    {
+      "name": "qemu-ubuntu",
+      "type": "qemu",
+      "iso_url": "http://releases.ubuntu.com/16.04/ubuntu-16.04.4-server-amd64.iso",
+      "iso_checksum_url": "http://releases.ubuntu.com/16.04/SHA256SUMS",
+      "iso_checksum_type": "sha256",
+      "http_directory": "kickstart/ubuntu-16.04",
+      "output_directory": "packer_output/qemu-ubuntu",
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "shutdown_command": "sudo systemctl poweroff",
+      "boot_command": [
+        "<enter><wait>",
+        "<f6><esc>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs>",
+        "/install/vmlinuz noapic ",
+        "initrd=/install/initrd.gz ",
+        "auto=true ",
+        "priority=critical ",
+        "url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg ",
+        "<enter>"
+      ]
+    },
+    {
+      "name": "qemu-centos",
+      "type": "qemu",
+      "iso_url": "http://mirror.rackspace.com/CentOS/7/isos/x86_64/CentOS-7-x86_64-Minimal-1708.iso",
+      "iso_checksum_url": "http://mirror.rackspace.com/CentOS/7/isos/x86_64/sha256sum.txt",
+      "iso_checksum_type": "sha256",
+      "http_directory": "kickstart/centos7",
+      "output_directory": "packer_output/qemu-centos",
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "shutdown_command": "sudo systemctl poweroff",
+      "boot_command": [
+        "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg<enter><wait>"
+      ]
     }
   ],
   "provisioners": [
@@ -61,5 +110,26 @@
         "common_upgrade_base=true kubernetes_version={{user `kubernetes_version`}} kubernetes_cni_version={{user `kubernetes_cni_version`}}"
       ]
     }
+  ],
+  "post-processors": [
+    [
+      {
+        "type": "vagrant",
+        "output": "packer_output/{{ .BuildName }}.box",
+        "only": ["qemu-ubuntu","qemu-centos"]
+      },
+      {
+        "type": "vagrant-cloud",
+        "box_tag": "{{user `vagrant_cloud_ubuntu_tag`}}",
+        "version": "{{user `vagrant_cloud_box_version`}}",
+        "only": ["qemu-ubuntu"]
+      },
+      {
+        "type": "vagrant-cloud",
+        "box_tag": "{{user `vagrant_cloud_centos_tag`}}",
+        "version": "{{user `vagrant_cloud_box_version`}}",
+        "only": ["qemu-centos"]
+      }
+    ]
   ]
 }

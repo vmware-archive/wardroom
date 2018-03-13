@@ -5,7 +5,6 @@
     path: "{{ item }}"
   with_items:
     - /root/.ssh/authorized_keys
-    - "/home/{{ ansible_env.SUDO_USER }}/.ssh/authorized_keys"
     - /etc/machine-id
     - /var/lib/cloud
     - /var/log/cloud-init.log
@@ -15,3 +14,17 @@
   file:
     dest: /etc/machine-id
     state: touch
+
+- name: cleanup packer artifacts
+  file:
+    state: absent
+    path: "{{ item }}"
+  with_items:
+    - "/home/{{ ansible_env.SUDO_USER }}/.ssh/authorized_keys"
+  when: packer_builder_type | default(None) != 'qemu'
+
+- import_tasks: debian.yml
+  when: ansible_os_family == "Debian"
+
+- import_tasks: redhat.yml
+  when: ansible_os_family == "RedHat"

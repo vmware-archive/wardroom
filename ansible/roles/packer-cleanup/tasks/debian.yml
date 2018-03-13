@@ -1,0 +1,20 @@
+---
+- name: cleanup udev rules
+  file:
+    state: absent
+    path: "{{ item }}"
+  with_items:
+    - /dev/.udev
+    - /lib/udev/rules.d/75-persistent-net-generator.rules
+
+- name: cleanup dhcp leases
+  file:
+    state: absent
+    path: "{{ item }}"
+  with_items:
+    - /var/lib/dhcp3
+    - /var/lib/dhcp
+
+- command: apt-get -y autoremove --purge
+- command: apt-get -y clean
+- command: apt-get -y autoclean
