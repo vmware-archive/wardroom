@@ -8,7 +8,12 @@
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
     "vagrant_cloud_box_version": "1.0.{{timestamp}}",
     "vagrant_cloud_centos_tag": "heptio/quickstart-centos",
-    "vagrant_cloud_ubuntu_tag": "heptio/quickstart-ubuntu"
+    "vagrant_cloud_ubuntu_tag": "heptio/quickstart-ubuntu",
+    "vagrant_centos_iso_url": "http://mirror.rackspace.com/CentOS/7/isos/x86_64/CentOS-7-x86_64-Minimal-1708.iso",
+    "vagrant_centos_iso_sha256": "http://mirror.rackspace.com/CentOS/7/isos/x86_64/sha256sum.txt",
+    "vagrant_ubuntu_iso_url": "http://releases.ubuntu.com/16.04/ubuntu-16.04.4-server-amd64.iso",
+    "vagrant_ubuntu_iso_sha256": "http://releases.ubuntu.com/16.04/SHA256SUMS"
+
   },
   "builders": [
     {
@@ -54,10 +59,10 @@
     {
       "name": "qemu-ubuntu",
       "type": "qemu",
-      "iso_url": "http://releases.ubuntu.com/16.04/ubuntu-16.04.4-server-amd64.iso",
-      "iso_checksum_url": "http://releases.ubuntu.com/16.04/SHA256SUMS",
+      "iso_url": "{{user `vagrant_ubuntu_iso_url`}}",
+      "iso_checksum_url": "{{user `vagrant_ubuntu_iso_sha256`}}",
       "iso_checksum_type": "sha256",
-      "http_directory": "kickstart/ubuntu-16.04",
+      "http_directory": "http/ubuntu-16.04",
       "output_directory": "packer_output/qemu-ubuntu",
       "ssh_username": "vagrant",
       "ssh_password": "vagrant",
@@ -85,11 +90,59 @@
     {
       "name": "qemu-centos",
       "type": "qemu",
-      "iso_url": "http://mirror.rackspace.com/CentOS/7/isos/x86_64/CentOS-7-x86_64-Minimal-1708.iso",
-      "iso_checksum_url": "http://mirror.rackspace.com/CentOS/7/isos/x86_64/sha256sum.txt",
+      "iso_url": "{{user `vagrant_centos_iso_url`}}",
+      "iso_checksum_url": "{{user `vagrant_centos_iso_sha256`}}",
       "iso_checksum_type": "sha256",
-      "http_directory": "kickstart/centos7",
+      "http_directory": "http/centos7",
       "output_directory": "packer_output/qemu-centos",
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "shutdown_command": "sudo systemctl poweroff",
+      "boot_command": [
+        "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg<enter><wait>"
+      ]
+    },
+    {
+      "name": "vbox-ubuntu",
+      "type": "virtualbox-iso",
+      "guest_os_type": "Ubuntu_64",
+      "iso_url": "{{user `vagrant_ubuntu_iso_url`}}",
+      "iso_checksum_url": "{{user `vagrant_ubuntu_iso_sha256`}}",
+      "iso_checksum_type": "sha256",
+      "http_directory": "http/ubuntu-16.04",
+      "output_directory": "packer_output/vbox-ubuntu",
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "shutdown_command": "sudo systemctl poweroff",
+      "boot_command": [
+        "<enter><wait>",
+        "<f6><esc>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs>",
+        "/install/vmlinuz noapic ",
+        "initrd=/install/initrd.gz ",
+        "auto=true ",
+        "priority=critical ",
+        "url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg ",
+        "<enter>"
+      ]
+    },
+    {
+      "name": "vbox-centos",
+      "type": "virtualbox-iso",
+      "guest_os_type": "RedHat_64",
+      "iso_url": "{{user `vagrant_centos_iso_url`}}",
+      "iso_checksum_url": "{{user `vagrant_centos_iso_sha256`}}",
+      "iso_checksum_type": "sha256",
+      "http_directory": "http/centos7",
+      "output_directory": "packer_output/vbox-centos",
       "ssh_username": "vagrant",
       "ssh_password": "vagrant",
       "shutdown_command": "sudo systemctl poweroff",
@@ -115,20 +168,19 @@
     [
       {
         "type": "vagrant",
-        "output": "packer_output/{{ .BuildName }}.box",
-        "only": ["qemu-ubuntu","qemu-centos"]
+        "output": "packer_output/{{ .BuildName }}.box"
       },
       {
         "type": "vagrant-cloud",
         "box_tag": "{{user `vagrant_cloud_ubuntu_tag`}}",
         "version": "{{user `vagrant_cloud_box_version`}}",
-        "only": ["qemu-ubuntu"]
+        "only": ["qemu-ubuntu","vbox-ubuntu"]
       },
       {
         "type": "vagrant-cloud",
         "box_tag": "{{user `vagrant_cloud_centos_tag`}}",
         "version": "{{user `vagrant_cloud_box_version`}}",
-        "only": ["qemu-centos"]
+        "only": ["qemu-centos","vbox-centos"]
       }
     ]
   ]

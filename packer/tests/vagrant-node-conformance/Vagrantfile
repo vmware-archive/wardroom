@@ -1,0 +1,22 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.provider "libvirt" do |libvirt|
+    libvirt.memory = 4096
+  end
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 4096
+    v.customize ["modifyvm", :id, "--uartmode1", "disconnected"]
+  end
+
+  config.vm.define "ubuntu" do |ubuntu|
+    ubuntu.vm.box = "heptio/quickstart-ubuntu"
+  end
+
+  config.vm.define "centos" do |centos|
+    ubuntu.vm.box = "heptio/quickstart-centos"
+  end
+
+  config.vm.provision "shell", path: "node-conformance.sh"
+end
