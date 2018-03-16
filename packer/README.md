@@ -38,8 +38,8 @@ sudo ./ginkgo --nodes=8 --flakeAttempts=2 --focus="\[Conformance\]" --skip="\[Fl
 deployment
 ----------
 There is a helper script to aid in seeding built AMI's to all other AWS regions.
-You can install them with `python3 setup.py install`.
+You can install from the root of this repository with `python3 setup.py install`.
 
 ```
-copy-ami -r <SOURCE_REGION> -i <SOURCE_AMI> [-q]
+wardroom aws copy-ami -r <SOURCE_REGION> <SOURCE_AMI>
 ```
