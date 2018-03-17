@@ -174,13 +174,13 @@
         "type": "vagrant-cloud",
         "box_tag": "{{user `vagrant_cloud_ubuntu_tag`}}",
         "version": "{{user `vagrant_cloud_box_version`}}",
-        "only": ["qemu-ubuntu","vbox-ubuntu"]
+        "only": ["qemu-ubuntu","vbox-ubuntu","ami-ubuntu"]
       },
       {
         "type": "vagrant-cloud",
         "box_tag": "{{user `vagrant_cloud_centos_tag`}}",
         "version": "{{user `vagrant_cloud_box_version`}}",
-        "only": ["qemu-centos","vbox-centos"]
+        "only": ["qemu-centos","vbox-centos","ami-centos"]
       }
     ]
   ]

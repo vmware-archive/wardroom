@@ -9,14 +9,27 @@ Vagrant.configure("2") do |config|
     v.memory = 4096
     v.customize ["modifyvm", :id, "--uartmode1", "disconnected"]
   end
+  config.vm.provider "aws" do |aws, override|
+    aws.keypair_name = "default"
+    aws.instance_type = "m4.large"
+    aws.security_groups = ['public_ssh']
+    override.ssh.keys_only = false
+  end
 
   config.vm.define "ubuntu" do |ubuntu|
     ubuntu.vm.box = "heptio/quickstart-ubuntu"
+    ubuntu.vm.provider "aws" do |aws, override|
+      override.ssh.username = "ubuntu"
+    end
   end
 
   config.vm.define "centos" do |centos|
-    ubuntu.vm.box = "heptio/quickstart-centos"
+    centos.vm.box = "heptio/quickstart-centos"
+    centos.vm.provider "aws" do |aws, override|
+      override.ssh.username = "centos"
+    end
   end
 
+  config.vm.synced_folder ".", "/vagrant", type: "rsync"
   config.vm.provision "shell", path: "node-conformance.sh"
 end
