@@ -1,9 +1,11 @@
 ---
 kubernetes_master:
   kubeadm_config:
-    kubernetesVersion: 1.8.3
+    kubernetesVersion: 1.9.5
     api:
       advertiseAddress: "{{ kubernetes_common.api_ip }}"
+    apiServerExtraArgs:
+      "endpoint-reconciler-type": "lease"
     apiServerCertSANs:
     - "{{ kubernetes_common.api_fqdn }}"
     - "{{ kubernetes_common.api_ip }}"
