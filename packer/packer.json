@@ -52,16 +52,34 @@
       "name": "gcp-ubuntu-16.04",
       "type": "googlecompute",
       "project_id": "{{user `project_id`}}",
-      "source_image": "ubuntu-1604-xenial-v20180306",
+      "source_image": "{{ user `gcp_ubuntu_source_image`}}",
       "ssh_username": "packer",
       "zone": "us-east1-b",
       "metadata": {
         "build_version": "{{user `build_version`}}",
-        "source_ami": "ubuntu-1604-xenial-v20180306",
+        "source_image": "{{ user `gcp_ubuntu_source_image`}}",
         "build_date": "{{isotime}}",
         "distribution": "Ubuntu",
         "distribution_release": "xenial",
         "distribution_version": "16.04",
+        "kubernetes_version": "{{user `kubernetes_version`}}",
+        "kubernetes_cni_version": "{{user `kubernetes_cni_version`}}"
+      }
+    },
+    {
+      "name": "gcp-centos-7.4",
+      "type": "googlecompute",
+      "project_id": "{{user `project_id`}}",
+      "source_image": "{{ user `gcp_centos_source_image`}}",
+      "ssh_username": "packer",
+      "zone": "us-east1-b",
+      "metadata": {
+        "build_version": "{{user `build_version`}}",
+        "source_image": "{{ user `gcp_centos_source_image`}}",
+        "build_date": "{{isotime}}",
+        "distribution": "CentOS",
+        "distribution_release": "Core",
+        "distribution_version": "7.4",
         "kubernetes_version": "{{user `kubernetes_version`}}",
         "kubernetes_cni_version": "{{user `kubernetes_cni_version`}}"
       }
