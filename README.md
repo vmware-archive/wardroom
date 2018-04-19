@@ -10,6 +10,7 @@ supported operating systems
 currently supported image formats (more to follow)
 --------------------------------------------------
 - AMI
+- OpenStack
 
 image building
 --------------
