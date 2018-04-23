@@ -47,6 +47,31 @@
         "kubernetes_version": "{{user `kubernetes_version`}}",
         "kubernetes_cni_version": "{{user `kubernetes_cni_version`}}"
       }
+    },
+    {
+      "type": "openstack",
+      "flavor": "{{user `flavor`}}",
+      "image_name": "{{user `image_name`}}",
+      "identity_endpoint": "{{user `identity_endpoint`}}",
+      "source_image": "{{user `source_image`}}",
+      "username": "{{user `openstack_username`}}",
+      "password": "{{user `openstack_password`}}",
+      "availability_zone": "{{user `availability_zone`}}",
+      "config_drive": "{{user `config_drive`}}",
+      "cacert": "{{user `cacert`}}",
+      "cert": "{{user `cert`}}",
+      "domain_name": "{{user `domain_name`}}",
+      "endpoint_type": "{{user `endpoint_type`}}",
+      "image_visibility": "{{user `image_visibility`}}",
+      "insecure": "{{user `insecure`}}",
+      "key": "{{user `key`}}",
+      "metadata": {
+        "build_version": "{{user `build_version`}}",
+        "source_image": "{{user `source_image`}}",
+        "build_date": "{{isotime}}",
+        "kubernetes_version": "{{user `kubernetes_version`}}",
+        "kubernetes_cni_version": "{{user `kubernetes_cni_version`}}"
+      }
     }
   ],
   "provisioners": [

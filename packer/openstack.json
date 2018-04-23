@@ -1,0 +1,17 @@
+{
+  "flavor": "",
+  "image_name": "",
+  "identity_endpoint": "",
+  "source_image": "",
+  "openstack_username": "",
+  "openstack_password": "",
+  "availability_zone": "",
+  "config_drive": "",
+  "cacert": "",
+  "cert": "",
+  "key": "",
+  "domain_name": "",
+  "endpoint_type": "",
+  "image_visibility": "private",
+  "insecure": false
+}
