@@ -1,0 +1,24 @@
+- box:
+    vmw: "centos/7"
+    vb: "centos/7"
+    lv: "centos/7"
+  name: "centos7"
+  nested: false
+  nics:
+    - type: "private_network"
+      ip_addr: "dhcp"
+  ram: "1024"
+  sync_disabled: true
+  vcpu: "1"
+- box:
+    vmw: "generic/ubuntu1604"
+    vb: "ubuntu/xenial64"
+    lv: "generic/ubuntu1604"
+  name: "xenial"
+  nested: false
+  nics:
+    - type: "private_network"
+      ip_addr: "dhcp"
+  ram: "1024"
+  sync_disabled: true
+  vcpu: "1"
