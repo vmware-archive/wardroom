@@ -1,0 +1,8 @@
+---
+- name: Update network interfaces
+  command: sed -i "s/ens3/ens5/g" /etc/network/interfaces
+
+- name: Fix for vagrant reload
+  lineinfile:
+    path: /etc/network/interfaces
+    line: pre-up sleep 2

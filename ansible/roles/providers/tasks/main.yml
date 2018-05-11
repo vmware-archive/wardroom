@@ -2,3 +2,5 @@
 - include_tasks: aws.yml
   when: provider_name.lower() == 'aws'
 
+- include_tasks: vagrant.yml
+  when: provider_name.lower() == 'vagrant'

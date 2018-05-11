@@ -1,3 +1,3 @@
 ---
 packer_builder_type: ''
-provider_name: "{{ 'aws' if packer_builder_type.startswith('amazon') else '' }}"
+provider_name: "{{ packer_builder_type | provider_from_builder_type }}"

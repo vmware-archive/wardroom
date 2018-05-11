@@ -1,0 +1,9 @@
+---
+- name: install vagrant ssh key
+  authorized_key:
+    user: vagrant
+    state: present
+    key: https://raw.githubusercontent.com/mitchellh/vagrant/master/keys/vagrant.pub
+
+- import_tasks: vagrant-debian.yml
+  when: ansible_os_family == "Debian"
