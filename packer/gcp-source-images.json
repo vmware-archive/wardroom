@@ -1,0 +1,4 @@
+{
+  "gcp_ubuntu_source_image":  "ubuntu-1604-xenial-v20180306",
+  "gcp_centos_source_image": "centos-7-v20180401"
+}
