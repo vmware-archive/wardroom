@@ -96,9 +96,9 @@ Connect remotely to an instance created from the image and run the Node Conforma
 
 ```sh
 wget https://dl.k8s.io/$(< /etc/kubernetes_community_ami_version)/kubernetes-test.tar.gz
-tar -zxvf kubernetes-test.tar.gz
+tar -zxvf kubernetes-test.tar.gz kubernetes/platforms/linux/amd64
 cd kubernetes/platforms/linux/amd64
-sudo ./ginkgo --nodes=8 --flakeAttempts=2 --focus="\[Conformance\]" --skip="\[Flaky\]|\[Serial\]" ./e2e_node.test -- --k8s-bin-dir=/usr/bin
+sudo ./ginkgo --nodes=8 --flakeAttempts=2 --focus="\[Conformance\]" --skip="\[Flaky\]|\[Serial\]|\[sig-network\]|Container Lifecycle Hook" ./e2e_node.test -- --k8s-bin-dir=/usr/bin
 ```
 
 ## Deploying Images
