@@ -9,7 +9,7 @@
   },
   "builders": [
     {
-      "name": "ami-ubuntu-16.04",
+      "name": "ami-ubuntu",
       "type": "amazon-ebs",
       "instance_type": "t2.small",
       "source_ami": "{{user `ubuntu_16_04_ami`}}",
@@ -29,7 +29,7 @@
       }
     },
     {
-      "name": "ami-centos-7.4",
+      "name": "ami-centos",
       "type": "amazon-ebs",
       "instance_type": "t2.small",
       "source_ami": "{{user `centos_7_4_ami`}}",
@@ -49,7 +49,7 @@
       }
     },
     {
-      "name": "gcp-ubuntu-16.04",
+      "name": "gcp-ubuntu",
       "type": "googlecompute",
       "project_id": "{{user `project_id`}}",
       "source_image": "{{ user `gcp_ubuntu_source_image`}}",
@@ -67,7 +67,7 @@
       }
     },
     {
-      "name": "gcp-centos-7.4",
+      "name": "gcp-centos",
       "type": "googlecompute",
       "project_id": "{{user `project_id`}}",
       "source_image": "{{ user `gcp_centos_source_image`}}",

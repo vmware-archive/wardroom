@@ -1,89 +1,137 @@
-<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
-**Table of Contents**
+# Building Wardroom Images
 
-- [building images](#building-images)
-- [Amazon](#amazon)
-    - [aws-quickstart](#aws-quickstart)
-    - [prerequisites](#prerequisites)
-    - [build the AMI's](#build-the-amis)
-    - [testing the AMIs](#testing-the-amis)
-    - [deployment](#deployment)
-- [Google Cloud](#google-cloud)
-    - [build GCP images](#build-gcp-images)
+This directory contains tooling for building base images for use as nodes in Kubernetes Clusters. [Packer](https://www.packer.io) is used for building these images.
 
-<!-- markdown-toc end -->
+- [Building Wardroom Images](#building-wardroom-images)
+    - [Prerequisites](#prerequisites)
+        - [Prerequisites for all images](#prerequisites-for-all-images)
+        - [Prerequisites for Amazon Web Services](#prerequisites-for-amazon-web-services)
+        - [Prerequisites for Google Cloud](#prerequisites-for-google-cloud)
+    - [Building Images](#building-images)
+        - [Build Variables](#build-variables)
+        - [Limiting Images to Build](#limiting-images-to-build)
+        - [Building the AWS AMIs](#building-the-aws-amis)
+        - [Building Google Cloud Images](#building-google-cloud-images)
+    - [Testing Images](#testing-images)
+    - [Deploying Images](#deploying-images)
+        - [AWS](#aws)
+        - [Google Cloud](#google-cloud)
+    - [Updating the Heptio AWS Quick Start Images](#updating-the-heptio-aws-quick-start-images)
+    - [Appendix](#appendix)
+        - [GCP Service Account Credentials](#gcp-service-account-credentials)
 
-building images
-===============
-Building images for Kubernetes is easily accomplished with the [Packer](https://github.com/hashicorp/packer) and the templates found in this directory.
+## Prerequisites
 
-Amazon
-======
-
-aws-quickstart
---------------
-This directory contains the build scripts for the AWS AMI that's used by Heptio's [AWS Quick Start](https://github.com/heptioaws-quickstart). Heptio's AMI is, in turn, built on Ubuntu 16.04 LTS.
-
-prerequisites
--------------
-To build the AMI, you need:
+### Prerequisites for all images
 
 - [Packer](https://www.packer.io/docs/installation.html)
 - [Ansible](http://docs.ansible.com/ansible/latest/intro_installation.html) version >= 2.4.0.0
+
+### Prerequisites for Amazon Web Services
+
 - An AWS account
 - The AWS CLI installed and configured
 
-build the AMI's
----------------
-From this directory, simply run:
+### Prerequisites for Google Cloud
 
-```
-/path/to/packer build -var-file <YOUR REGION>.json -var kubernetes_version=<YOUR K8S VERSION> -var kubernetes_cni_version=<YOUR K8S CNI VERSION> -var build_version=`git rev-parse HEAD` packer.json
-```
-This will build AMI images in the us-east AWS region (additional region support to follow).
+- A Google Cloud account
+- The gcloud CLI installed and configured
+- A precreated service account json file
 
-You may limit which images build by adding the `-only=` flag to Packer.
+## Building Images
 
-testing the AMIs
-----------------
+### Build Variables
+
+The following variables can be overriden when building images using the `-var` option when calling `packer build`:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| build_version | unset | A unique build version for the image |
+| kubernetes_version | 1.9.5-00 | Kubernetes Version to install |
+| kubernetes_cni_version | 0.6.0-00 | CNI Version to install |
+
+For exmaple, to build all images for use with Kubernetes 1.8.9 for build version 1:
+
+```sh
+packer build -var kubernetes_version=1.8.9-00 -var build_version=1
 ```
-wget https://dl.k8s.io/v1.9.3/kubernetes-test.tar.gz
+
+There are additional variables that may be set that affect the behavior of specific builds or packer post-processors. `packer inspect packer.json` will list all available variables and their default values.
+
+### Limiting Images to Build
+
+If packer build is run without specifying which images to build, then it will attempt to build all configured images. `packer inspect packer.json` will list the configured builders. The `--only` option can be specified when running `packer build` to limit the images built.
+
+For example, to build only the AWS Ubuntu image:
+
+```sh
+packer build -var build_version=`git rev-parse HEAD` --only=ami-ubuntu packer.json
+```
+
+### Building the AWS AMIs
+
+Building AWS images requires setting additional variables not set by default. The `aws-us-east-1.json` file is provided as an example.
+
+To build both the Ubuntu and CentOS AWS AMIs:
+
+```sh
+packer build -var-file aws-us-east-1.json -var build_version=`git rev-parse HEAD` --only=ami-centos,ami-ubuntu packer.json
+```
+
+### Building Google Cloud Images
+
+Building Google Cloud images requires setting the `GOOGLE_APPLICATION_CREDENTIALS` environment variable and setting some additional that are not set by default. The `gcp-source-images.json` file is provided as an example.
+
+To build only the Ubuntu Google Cloud Image:
+
+```sh
+export GOOGLE_APPLICATION_CREDENTIALS=<YOUR CREDENTIAL FILE>
+export GOOGLE_PROJECT_ID=<PROJECT_ID>
+packer build -var-file=gcp-source-images.json -var build_version=`git rev-parse HEAD` -only gcp-ubuntu packer.json
+```
+
+## Testing Images
+
+Connect remotely to an instance created from the image and run the Node Conformance tests using the following commands:
+
+```sh
+wget https://dl.k8s.io/$(< /etc/kubernetes_community_ami_version)/kubernetes-test.tar.gz
 tar -zxvf kubernetes-test.tar.gz
 cd kubernetes/platforms/linux/amd64
 sudo ./ginkgo --nodes=8 --flakeAttempts=2 --focus="\[Conformance\]" --skip="\[Flaky\]|\[Serial\]" ./e2e_node.test -- --k8s-bin-dir=/usr/bin
 ```
 
-deployment
-----------
-There is a helper script to aid in seeding built AMI's to all other AWS regions.
-You can install from the root of this repository with `python3 setup.py install`.
+## Deploying Images
 
-```
+### AWS
+
+There is a helper script to aid in seeding built AMI's to all other AWS regions. This script can be installed from the root of this repository by running `python3 setup.py install`.
+
+```sh
 wardroom aws copy-ami -r <SOURCE_REGION> <SOURCE_AMI>
 ```
 
-Google Cloud
-============
+### Google Cloud
 
-build GCP images
------------------
+Unlike AWS, Google Cloud Images are not limited to specific regions, so no further steps are needed to use the create images.
 
-[Create a GCP service account][packergcp].
+## Updating the Heptio AWS Quick Start Images
 
-You'll need to download the credential file after creating your account. Make
-sure you don't commit it, it contains secrets.
+- Build the base image
 
-You'll also need to make note of the "project ID" you wish to run the container
-in. It's a string, and you can find it at the top of the Google Cloud Console,
-or with `gcloud projects list`.
+    ```sh
+    packer build -var-file aws-us-east-1.json -var build_version=`git rev-parse HEAD` --only=ami-ubuntu packer.json
+    ```
+- Run Node Conformance against the built image
+- Deploy the image using copy-ami
+- Update the [Quick Start](https://github.com/heptio/aws-quickstart) to use the new images
 
-Then, call packer:
+## Appendix
 
-```
-GOOGLE_APPLICATION_CREDENTIALS=<YOUR CREDENTIAL FILE> packer build -var kubernetes_version=<YOUR K8S VERSION> -var kubernetes_cni_version=<YOUR K8S CNI VERSION> -var build_version=`git rev-parse HEAD` -var project_id=<PROJECT_ID> -only gcp-ubuntu-16.04 packer.json
-```
+### GCP Service Account Credentials
 
-Google Cloud doesn't have public images in the same way that Amazon does, but
-you can create VMs from any image in a project you have access to.
+[Create a GCP service account](https://www.packer.io/docs/builders/googlecompute.html#running-without-a-compute-engine-service-account)
 
-[packergcp]: https://www.packer.io/docs/builders/googlecompute.html#running-without-a-compute-engine-service-account
+You'll need to download the credential file after creating your account. Make sure you don't commit it, it contains secrets.
+
+You'll also need to make note of the "project ID" you wish to run the container in. It's a string, and you can find it at the top of the Google Cloud Console, or with `gcloud projects list`.
