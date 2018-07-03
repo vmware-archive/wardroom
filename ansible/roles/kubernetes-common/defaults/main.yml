@@ -1,5 +1,4 @@
 ---
-<<<<<<< HEAD
 kubernetes_common_disable_swap: True
 kubernetes_common_api_fqdn: k8s.example.com
 kubernetes_common_api_ip: 10.10.10.3
