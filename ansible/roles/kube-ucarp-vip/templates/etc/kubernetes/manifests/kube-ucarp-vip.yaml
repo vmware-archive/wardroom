@@ -13,10 +13,10 @@ spec:
       privileged: true
     env:
     - name: UCARP_VID
-      value: "41"
+      value: "{{ kube_ucarp_vip_vid }}"
     - name: UCARP_ADDRESS
-      value: "10.10.10.3/24"
+      value: "{{ kube_ucarp_vip_address }}"
     - name: UCARP_PASSWORD
-      value: "mypassword"
+      value: "{{ kube_ucarp_vip_password }}"
     - name: UCARP_DEVICE
-      value: "enp0s8"
+      value: "{{ kube_ucarp_vip_interface }}"
