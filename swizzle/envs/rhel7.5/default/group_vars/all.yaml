@@ -1,0 +1,4 @@
+---
+etcd_interface: eth1
+kubernetes_common_primary_interface: eth1
+kube_ucarp_vip_interface: eth1

@@ -7,10 +7,20 @@
 # you're doing.
 MASTER_COUNT = 3
 NODE_COUNT = 1
+VAGRANT_BOX = ENV['VAGRANT_BOX'] || 'ubuntu16.04'
+VAGRANT_BOXES = {
+    'ubuntu16.04' => "ubuntu/xenial64",
+    'rhel7.5' => 'generic/rhel7',
+}
+VAGRANT_USERS = {
+    'ubuntu16.04' => "ubuntu",
+    'rhel7.5' => 'vagrant',
+}
 
 Vagrant.configure("2") do |config|
 
-  config.vm.box = "ubuntu/xenial64"
+  config.vm.box = VAGRANT_BOXES[VAGRANT_BOX]
+  config.ssh.username = VAGRANT_USERS[VAGRANT_BOX]
   (1..MASTER_COUNT).each do |i|
     config.vm.define "master#{i}" do |subconfig|
       subconfig.vm.hostname = "master#{i}.local"
@@ -22,7 +32,7 @@ Vagrant.configure("2") do |config|
         :virtualbox__intnet => "kubenetwork"
       subconfig.vm.provision "shell", inline: "ip route add 10.96.0.0/12 via 10.10.10.1#{i}"
       subconfig.vm.provider "virtualbox" do |v|
-  	v.memory = 1024
+  	v.memory = 2048
   	v.customize ["modifyvm", :id, "--uartmode1", "disconnected"]
       end
     end

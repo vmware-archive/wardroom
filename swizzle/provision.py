@@ -16,6 +16,7 @@
 ### WARNING: there is no error checking and this is not well tested! ###
 
 import argparse
+import glob
 import os
 import re
 import subprocess
@@ -23,6 +24,13 @@ import tempfile
 import random
 import sys
 import ConfigParser
+
+from distutils.dir_util import copy_tree
+
+OS_CHOICES = [
+    'ubuntu16.04',
+    'rhel7.5',
+]
 
 
 def vagrant_status():
@@ -71,7 +79,7 @@ def run_ansible(inventory_file, extra_args=[]):
         "swizzle.yml"] + extra_args, env=ansible_env)
 
 
-def generate_inventory(node_state={}):
+def generate_inventory(box, env, node_state={}):
     """ from node_state generate a dynamic ansible inventory.
         return temporary inventory file path """
     inventory = {
@@ -95,21 +103,29 @@ def generate_inventory(node_state={}):
         for val in vals:
             parser.set(key, val)
 
-    temp_file = tempfile.mkstemp()[1]
-    with open(temp_file, 'w') as fh:
+    temp_dir = tempfile.mkdtemp()
+    for file in glob.glob('./envs/%s/%s/' % (box, env)):
+        copy_tree(file, temp_dir)
+
+    hosts_file = os.path.join(temp_dir, 'hosts')
+    with open(hosts_file, 'w') as fh:
         parser.write(fh)
 
     print "Running with inventory:\n"
     parser.write(sys.stdout)
     print
 
-    return temp_file
+    return temp_dir
 
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument("os", default="ubuntu16.04",
+                        choices=OS_CHOICES)
+    parser.add_argument("--env", default="default")
     args, extra_args = parser.parse_known_args()
 
+    os.environ['VAGRANT_BOX'] = args.os
     node_state = vagrant_status()
 
     start_vms = False
@@ -122,7 +138,7 @@ def main():
         vagrant_up()
 
     node_state = vagrant_status()
-    inventory_file = generate_inventory(node_state)
+    inventory_file = generate_inventory(args.os, args.env, node_state)
     run_ansible(inventory_file, extra_args)
 
 

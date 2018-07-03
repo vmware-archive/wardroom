@@ -1,0 +1,4 @@
+---
+etcd_interface: enp0s8
+kubernetes_common_primary_interface: enp0s8
+kube_ucarp_vip_interface: enp0s8
