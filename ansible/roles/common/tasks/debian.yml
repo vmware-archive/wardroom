@@ -11,16 +11,12 @@
 
 - name: install baseline dependencies
   apt:
-    name: "{{item}}"
+    name: "{{ item }}"
     state: latest
-  with_items:
-    - openssh-client
-    - openssh-server
-    - apt-transport-https
-    - python-pip
-    - python-requests
-    - ebtables
-    - socat
-    - ntp
-    - jq
-    - nfs-client
+  with_items: "{{ common_debs }}"
+
+- name: install extra debs
+  apt:
+    name: "{{ item }}"
+    state: latest
+  with_items: "{{ common_extra_debs }}"
