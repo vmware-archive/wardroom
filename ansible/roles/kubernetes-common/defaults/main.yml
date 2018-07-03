@@ -1,7 +1,7 @@
 ---
-kubernetes_common:
-  api_fqdn: k8s.example.com
-  api_ip: 10.10.10.3
-  primary_interface: enp0s8
-  # kubelet_extra_args is a dict of arg:value (ie. 'node-ip: 1.1.1.1' for '--node-ip=1.1.1.1')
-  kubelet_extra_args: {}
+kubernetes_common_api_fqdn: k8s.example.com
+kubernetes_common_api_ip: 10.10.10.3
+kubernetes_common_primary_interface: enp0s8
+
+# kubelet_extra_args is a dict of arg:value (ie. 'node-ip: 1.1.1.1' for '--node-ip=1.1.1.1')
+kubernetes_common_kubelet_extra_args: {}

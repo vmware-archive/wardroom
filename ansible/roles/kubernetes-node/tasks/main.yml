@@ -5,5 +5,5 @@
   ignore_errors: True
 
 - name: join nodes to masters
-  command: "/usr/bin/kubeadm join {{ kubernetes_common.api_ip }}:6443 --token='{{ hostvars[groups['primary_master'][0]]['generated_token']['stdout'] }}' --discovery-token-unsafe-skip-ca-verification"
+  command: "/usr/bin/kubeadm join {{ kubernetes_common_api_ip }}:6443 --token='{{ hostvars[groups['primary_master'][0]]['generated_token']['stdout'] }}' --discovery-token-unsafe-skip-ca-verification"
   when: kube_proxy_running|failed
