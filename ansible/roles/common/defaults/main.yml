@@ -1,2 +1,25 @@
 ---
 common_upgrade_base: "{{ common.upgrade_base if common_upgrade_base_defined else False }}"
+common_rpms:
+- yum-utils
+- python2-pip
+- python-requests
+- ebtables
+-  socat
+- ntp
+- jq
+- nfs-utils
+common_extra_rpms: []
+common_debs:
+- openssh-client
+- openssh-server
+- apt-transport-https
+- python-pip
+- python-requests
+- ebtables
+- socat
+- ntp
+- jq
+- nfs-client
+common_extra_debs: []
+common_redhat_epel_rpm: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm"
