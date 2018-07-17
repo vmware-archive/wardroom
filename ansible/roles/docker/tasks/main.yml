@@ -25,3 +25,4 @@
 - name: install docker-py
   pip:
     name: docker-py
+  when: kubernetes_enable_cached_images | bool
