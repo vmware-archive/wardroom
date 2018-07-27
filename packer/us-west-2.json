@@ -1,0 +1,4 @@
+{
+    "ubuntu_16_04_ami": "ami-b53c6acd",
+    "centos_7_4_ami": "ami-19007261"
+}
