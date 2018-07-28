@@ -47,13 +47,13 @@ The following variables can be overriden when building images using the `-var` o
 | Variable | Default | Description |
 |----------|---------|-------------|
 | build_version | unset | A unique build version for the image |
-| kubernetes_version | 1.9.5-00 | Kubernetes Version to install |
+| kubernetes_version | 1.11.0-00 | Kubernetes Version to install |
 | kubernetes_cni_version | 0.6.0-00 | CNI Version to install |
 
 For exmaple, to build all images for use with Kubernetes 1.8.9 for build version 1:
 
 ```sh
-packer build -var kubernetes_version=1.8.9-00 -var build_version=1
+packer build -var kubernetes_version=1.10.3-00 -var build_version=1
 ```
 
 There are additional variables that may be set that affect the behavior of specific builds or packer post-processors. `packer inspect packer.json` will list all available variables and their default values.
