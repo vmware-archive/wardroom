@@ -78,6 +78,38 @@ To build both the Ubuntu and CentOS AWS AMIs:
 packer build -var-file aws-us-east-1.json -var build_version=`git rev-parse HEAD` --only=ami-centos,ami-ubuntu packer.json
 ```
 
+#### Required Permissions to Build the AWS AMIs
+
+The [Packer documentation for the Amazon AMI builder](https://www.packer.io/docs/builders/amazon.html) supplies a suggested set of minimum permissions. However, Wardroom has been successfully tested with the following IAM permissions:
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ec2:Describe*",
+                "ec2:TerminateInstances",
+                "ec2:StartInstances",
+                "ec2:CreateSnapshot",
+                "ec2:CreateImage",
+                "ec2:RunInstances",
+                "ec2:StopInstances",
+                "ec2:CreateKeyPair",
+                "ec2:DeleteKeyPair",
+                "ec2:CreateSecurityGroup",
+                "ec2:DeleteSecurityGroup",
+                "ec2:AuthorizeSecurityGroupIngress",
+                "ec2:CreateTags",
+                "ec2:DeleteVolume"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+```
+
 ### Building Google Cloud Images
 
 Building Google Cloud images requires setting the `GOOGLE_APPLICATION_CREDENTIALS` environment variable and setting some additional that are not set by default. The `gcp-source-images.json` file is provided as an example.
