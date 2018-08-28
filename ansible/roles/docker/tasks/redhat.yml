@@ -14,13 +14,22 @@
     gpgkey: https://download.docker.com/linux/centos/gpg
     gpgcheck: true
 
-- name: install docker
-  yum:
-    name: "{{ item }}"
-    state: present
-    allow_downgrade: True
-  with_items:
-    - "docker-ce-selinux-{{docker_redhat_version}}"
+- name: determine if docker binary is present (implies Docker is installed)
+  stat:
+    path: /usr/bin/docker
+  register: docker_present
+
+- name: install Docker CE if docker binary is not present
+  command: "yum install -y --setopt=obsoletes=0 docker-ce-selinux-{{docker_redhat_version}} docker-ce-{{docker_redhat_version}}"
+  when: docker_present.stat.exists == False
+
+#- name: install docker
+#  yum:
+#    name: "{{ item }}"
+#    state: present
+#    allow_downgrade: True
+#  with_items:
+#    - "docker-ce-selinux-{{docker_redhat_version}}"
 
 - name: start docker service
   service:
