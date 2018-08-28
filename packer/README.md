@@ -112,14 +112,37 @@ The [Packer documentation for the Amazon AMI builder](https://www.packer.io/docs
 
 ### Building Google Cloud Images
 
-Building Google Cloud images requires setting the `GOOGLE_APPLICATION_CREDENTIALS` environment variable and setting some additional that are not set by default. The `gcp-source-images.json` file is provided as an example.
+Building Google Cloud images requires setting the `GOOGLE_APPLICATION_CREDENTIALS` environment variable and providing the IDs of the source images. For the latter, the `gcp-source-images.json` file is provided as an example.
 
 To build only the Ubuntu Google Cloud Image:
 
 ```sh
 export GOOGLE_APPLICATION_CREDENTIALS=<YOUR CREDENTIAL FILE>
-export GOOGLE_PROJECT_ID=<PROJECT_ID>
-packer build -var-file=gcp-source-images.json -var build_version=`git rev-parse HEAD` -only gcp-ubuntu packer.json
+packer build -var-file=gcp-source-images.json -var build_version=`git rev-parse HEAD` -var project_id=<your-project-id-here> -only gcp-ubuntu packer.json
+```
+
+#### Permissions Required to Build Google Cloud Images
+
+The account used by Wardroom (as specified by the `GOOGLE_APPLICATION_CREDENTIALS` environment variable) must have the following permissions in order for Wardroom to function as expected:
+
+```
+compute.disks.create
+compute.disks.delete
+compute.disks.useReadOnly
+compute.images.create
+compute.images.delete
+compute.images.get
+compute.instances.create
+compute.instances.delete
+compute.instances.get
+compute.instances.setMetadata
+compute.instances.setServiceAccount
+compute.instances.start
+compute.instances.stop
+compute.machineTypes.get
+compute.subnetworks.use
+compute.subnetworks.useExternalIp
+compute.zones.get
 ```
 
 ## Testing Images
@@ -165,5 +188,7 @@ Unlike AWS, Google Cloud Images are not limited to specific regions, so no furth
 [Create a GCP service account](https://www.packer.io/docs/builders/googlecompute.html#running-without-a-compute-engine-service-account)
 
 You'll need to download the credential file after creating your account. Make sure you don't commit it, it contains secrets.
+
+If you want to use a service account for use with Wardroom, you'll also need to grant the service account the ServiceAccountUser role in order for Wardroom to function properly.
 
 You'll also need to make note of the "project ID" you wish to run the container in. It's a string, and you can find it at the top of the Google Cloud Console, or with `gcloud projects list`.
