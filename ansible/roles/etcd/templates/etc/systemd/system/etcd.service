@@ -14,12 +14,12 @@ TimeoutStartSec=0
 ExecStart=/usr/local/bin/etcd \
     --name={{ inventory_hostname }} \
     --data-dir=/var/lib/etcd \
-    --listen-client-urls=http://{{hostvars[inventory_hostname]['ansible_' + etcd.interface]['ipv4']['address']}}:2379 \
-    --advertise-client-urls=http://{{hostvars[inventory_hostname]['ansible_' + etcd.interface]['ipv4']['address']}}:2379 \
-    --listen-peer-urls=http://{{hostvars[inventory_hostname]['ansible_' + etcd.interface]['ipv4']['address']}}:2380 \
-    --initial-advertise-peer-urls=http://{{hostvars[inventory_hostname]['ansible_' + etcd.interface]['ipv4']['address']}}:2380 \
+    --listen-client-urls=http://{{hostvars[inventory_hostname]['ansible_' + etcd_interface]['ipv4']['address']}}:2379 \
+    --advertise-client-urls=http://{{hostvars[inventory_hostname]['ansible_' + etcd_interface]['ipv4']['address']}}:2379 \
+    --listen-peer-urls=http://{{hostvars[inventory_hostname]['ansible_' + etcd_interface]['ipv4']['address']}}:2380 \
+    --initial-advertise-peer-urls=http://{{hostvars[inventory_hostname]['ansible_' + etcd_interface]['ipv4']['address']}}:2380 \
     --initial-cluster={{ etcd_cluster_endpoints }} \
-    --initial-cluster-token={{ etcd.cluster_token }} \
+    --initial-cluster-token={{ etcd_cluster_token }} \
     --initial-cluster-state=new
 
 [Install]

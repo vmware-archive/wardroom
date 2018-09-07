@@ -9,7 +9,7 @@
 - name: move binaries into path
   copy:
     remote_src: True
-    src: "/tmp/etcd-{{ etcd.version }}-linux-amd64/{{ item }}"
+    src: "/tmp/etcd-{{ etcd_version }}-linux-amd64/{{ item }}"
     dest: "/usr/local/bin/{{ item }}"
   with_items:
     - etcd
