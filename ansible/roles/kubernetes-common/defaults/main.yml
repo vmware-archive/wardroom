@@ -1,8 +1,9 @@
 ---
+<<<<<<< HEAD
 kubernetes_common_disable_swap: True
 kubernetes_common_api_fqdn: k8s.example.com
 kubernetes_common_api_ip: 10.10.10.3
-kubernetes_common_primary_interface: enp0s8
+kubernetes_common_primary_interface: eth0
 
 # kubelet_extra_args is a dict of arg:value (ie. 'node-ip: 1.1.1.1' for '--node-ip=1.1.1.1')
 kubernetes_common_kubelet_extra_args: {}

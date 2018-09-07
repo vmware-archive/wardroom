@@ -1,0 +1,6 @@
+---
+name: local
+description: A local test provisioner
+provisioner_name: vagrant
+ansible_overrides:
+    kubernetes_primary_interface: eth0

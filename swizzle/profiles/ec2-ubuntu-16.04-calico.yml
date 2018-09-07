@@ -1,0 +1,10 @@
+---
+name: ec2-ubuntu-16.04-calico
+description: An Ubuntu Xenial Kubernetes install
+provisioner_name: terraform-ec2
+provisioner_args:
+    terraform_path: ./terraform
+ssh_username: ubuntu
+ansible_overrides:
+    kubernetes_common_primary_interface: eth0
+    kubernetes_common_api_fqdn: "{{ master_elb_dns_name }}"
