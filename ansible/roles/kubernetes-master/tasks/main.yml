@@ -2,9 +2,9 @@
 - name: update /etc/hosts to include cluster fqdn
   lineinfile:
     dest: /etc/hosts
-    line: "{{ kubernetes_common.api_ip }} {{ kubernetes_common.api_fqdn }}"
+    line: "{{ kubernetes_common_api_ip }} {{ kubernetes_common_api_fqdn }}"
     state: present
-  when: kubernetes_common.api_ip is defined and kubernetes_common.api_fqdn is defined
+  when: kubernetes_common_api_ip is defined and kubernetes_common_api_fqdn is defined
 
 - name: determine whether kubeadm needs to be run
   stat:

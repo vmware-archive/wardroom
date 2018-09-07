@@ -1,9 +1,12 @@
 ---
+- name: disable swap
+  command: swapoff -a
+
 - set_fact:
     kubernetes_node_ip: "{{ hostvars[inventory_hostname]['ansible_'~item]['ipv4']['address'] }}"
   with_items:
-    - "{{ kubernetes_common.primary_interface }}"
-  when: kubernetes_common.primary_interface is defined
+    - "{{ kubernetes_common_primary_interface }}"
+  when: kubernetes_common_primary_interface is defined
 
 - name: create kubelet config directory
   file:
@@ -16,4 +19,4 @@
     src: etc/systemd/system/kubelet.service.d/09-extra-args.conf
   notify:
     - restart kubelet
-  when: kubernetes_common.primary_interface is defined or kubernetes_common.kubelet_extra_args is defined
+  when: kubernetes_common_primary_interface is defined or kubernetes_common_kubelet_extra_args is defined
