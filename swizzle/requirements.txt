@@ -1,0 +1,5 @@
+ansible
+jinja2
+jsonpath-ng
+pyyaml
+stevedore

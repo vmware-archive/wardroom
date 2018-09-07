@@ -1,0 +1,111 @@
+# Copyright (c) 2018 Craig Tracey <ctracey@heptio.com>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#    http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import os
+import random
+import re
+import subprocess
+import sys
+import tempfile
+import ConfigParser
+
+from wardroom_provision.provisioners import Provisioner
+
+
+class VagrantProvisioner(Provisioner):
+
+    def provision(self):
+        node_state = self._vagrant_status()
+
+        start_vms = False
+        for node, state in node_state.items():
+            if state != 'running':
+                start_vms = True
+                break
+
+        if start_vms:
+            self._vagrant_up()
+
+        #node_state = self._vagrant_status()
+        #inventory_file = generate_inventory(node_state)
+        #run_ansible(inventory_file, extra_args)
+
+    @property
+    def exported_vars(self):
+        return {}
+
+    def _vagrant_status(self):
+        """ Run `vagrant status` and parse the current vm state """
+        node_state = {}
+
+        output = subprocess.check_output(['vagrant', 'status'])
+        for i, line in enumerate(output.splitlines()):
+            if i < 2:
+                continue
+            parts = re.split('\s+', line)
+            if len(parts) == 3:
+                node_state[parts[0]] = parts[1]
+            elif len(parts) == 4:
+                node_state[parts[0]] = " ".join(parts[1:3])
+        return node_state
+
+    def _vagrant_up(self):
+        """ Bring up the vm's with a `vagrant up`"""
+        subprocess.call(['vagrant', 'up', '--parallel'])
+
+    def _vagrant_ssh_config(self, tempfile):
+        """ Get the current ssh config via `vagrant ssh-config` """
+        output = subprocess.check_output(['vagrant', 'ssh-config'])
+        with open(tempfile, 'w') as fh:
+            fh.write(output)
+
+    def ssh_config(self):
+        ssh_tempfile = tempfile.mkstemp()
+        self._vagrant_ssh_config(ssh_tempfile[1])
+        return ssh_tempfile[1]
+
+    def generate_inventory(self):
+        """ from node_state generate a dynamic ansible inventory.
+            return temporary inventory file path """
+        node_state = self._vagrant_status()
+        inventory = {
+            "etcd": [],
+            "primary_master": [],
+            "masters": [],
+            "nodes": [],
+        }
+        for node, state in node_state.items():
+            if state == "running":
+                if node.startswith('master'):
+                    inventory["masters"].append(node)
+                    inventory["etcd"].append(node)
+                elif node.startswith("node"):
+                    inventory["nodes"].append(node)
+        inventory['primary_master'] = [random.choice(inventory['masters'])]
+
+        parser = ConfigParser.ConfigParser(allow_no_value=True)
+        for key, vals in inventory.items():
+            parser.add_section(key)
+            for val in vals:
+                parser.set(key, val)
+
+        temp_file = tempfile.mkstemp()[1]
+        with open(temp_file, 'w') as fh:
+            parser.write(fh)
+
+        print "Running with inventory:\n"
+        parser.write(sys.stdout)
+        print
+
+        return temp_file
