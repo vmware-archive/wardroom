@@ -4,6 +4,6 @@
   become: yes
   pre_tasks:
   - name: install python
-    raw: bash -c "test -e /usr/bin/python || (apt -qqy update && apt install -qqy python python-pip)"
+    raw: bash -c "if grep -qi debian /etc/os-release && [ ! -e /usr/bin/python ]; then apt -qqy update; apt install -qqy python python-pip; fi;"
     register: output
     changed_when: output.stdout != ""
