@@ -145,6 +145,22 @@ compute.subnetworks.useExternalIp
 compute.zones.get
 ```
 
+### Building Oracle Cloud Infrastructure (OCI) Images
+
+Building Oracle Cloud Infrastructure (OCI) images requires a correct configuration for the Oracle CLI as outlined in the "CLI Configuration Information" section of [this page](https://docs.cloud.oracle.com/iaas/Content/API/Concepts/sdkconfig.htm), althoug the Oracle CLI does not need to be installed (Packer will use the values in the configuration file).
+
+You will also need the following pieces of information:
+
+* The Oracle Cloud ID (OCID) of the compartment where the build VM will be instantiated (you can use the root compartment, whose OCID is equal to the tenancy OCID)
+* The name of the availability domain where the build VM will be instantiated
+* The OCID for the subnet that corresponds to the availability domain where the build VM will be instantiated
+
+To build an OCI image:
+
+```sh
+packer build -var-file oci-us-phoenix-1.json -var build_version=`git rev-parse HEAD` -var oci_availability_domain="<name of availability domain>" -var oci_compartment_ocid="<OCID of compartment>" -var oci_subnet_ocid="<OCID of subnet in specified availability domain>" -only=oci-ubuntu packer.json
+```
+
 ## Testing Images
 
 Connect remotely to an instance created from the image and run the Node Conformance tests using the following commands:

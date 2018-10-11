@@ -83,6 +83,27 @@
         "kubernetes_version": "{{user `kubernetes_version`}}",
         "kubernetes_cni_version": "{{user `kubernetes_cni_version`}}"
       }
+    },
+    {
+      "name": "oci-ubuntu",
+      "type": "oracle-oci",
+      "availability_domain": "{{ user `oci_availability_domain` }}",
+      "base_image_ocid": "{{ user `oci_base_image_ocid` }}",
+      "compartment_ocid": "{{ user `oci_compartment_ocid` }}",
+      "image_name": "Canonical-Ubuntu-16.04-K8s-{{ user `kubernetes_version` }}-{{ timestamp }}",
+      "shape": "VM.Standard1.1",
+      "ssh_username": "ubuntu",
+      "subnet_ocid": "{{ user `oci_subnet_ocid` }}",
+      "tags": {
+        "build_version": "{{ user `build_version` }}",
+        "source_ami": "{{ user `oci_base_image_ocid` }}",
+        "build_date": "{{ isotime }}",
+        "distribution": "Ubuntu",
+        "distribution_release": "xenial",
+        "distribution_version": "16.04",
+        "kubernetes_version": "{{ user `kubernetes_version` }}",
+        "kubernetes_cni_version": "{{ user `kubernetes_cni_version` }}"
+      }
     }
   ],
   "provisioners": [
