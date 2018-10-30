@@ -4,3 +4,6 @@
 
 - include_tasks: flannel.yml
   when: kubernetes_cni_plugin == "flannel"
+
+- include_tasks: canal.yml
+  when: kubernetes_cni_plugin == "canal"

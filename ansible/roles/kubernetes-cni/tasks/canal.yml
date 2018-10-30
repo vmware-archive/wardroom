@@ -1,0 +1,14 @@
+---
+- name: install CNI rbac
+  command: "/usr/bin/kubectl apply -f {{ kubernetes_cni_canal_rbac_manifest_url }}"
+  run_once: True
+  delegate_to: "{{ groups['masters'][0] }}"
+  retries: 10
+  delay: 5
+
+- name: install CNI networking
+  command: "/usr/bin/kubectl apply -f {{ kubernetes_cni_canal_manifest_url }}"
+  run_once: True
+  delegate_to: "{{ groups['masters'][0] }}"
+  retries: 10
+  delay: 5
