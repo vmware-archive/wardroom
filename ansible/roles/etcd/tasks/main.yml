@@ -5,6 +5,7 @@
     src: "{{ etcd_release_url }}"
     dest: /tmp
     creates: /usr/local/bin/etcd
+  register: etcd_download
 
 - name: move binaries into path
   copy:
@@ -14,6 +15,7 @@
   with_items:
     - etcd
     - etcdctl
+  when: etcd_download.skipped == False
 
 - name: set permissions on etcd binaries
   file:
