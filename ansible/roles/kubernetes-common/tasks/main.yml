@@ -15,6 +15,7 @@
 
 - name: drop extra args kubelet config
   template:
+    backup: True
     dest: /etc/systemd/system/kubelet.service.d/09-extra-args.conf
     src: etc/systemd/system/kubelet.service.d/09-extra-args.conf
   notify:
