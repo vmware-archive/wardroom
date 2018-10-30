@@ -1,0 +1,23 @@
+machine-0 ansible_host=[server IP] ansible_user=[user] ansible_ssh_private_key_file=[path to ssh key]
+machine-1 ansible_host=[server IP] ansible_user=[user] ansible_ssh_private_key_file=[path to ssh key]
+machine-2 ansible_host=[server IP] ansible_user=[user] ansible_ssh_private_key_file=[path to ssh key]
+machine-3 ansible_host=[server IP] ansible_user=[user] ansible_ssh_private_key_file=[path to ssh key]
+machine-4 ansible_host=[server IP] ansible_user=[user] ansible_ssh_private_key_file=[path to ssh key]
+
+[etcd]
+machine-0
+machine-1
+machine-2
+
+[primary_master]
+machine-0
+
+[masters]
+machine-0
+machine-1
+machine-2
+
+[nodes]
+machine-3
+machine-4
+
