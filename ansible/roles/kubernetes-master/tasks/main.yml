@@ -11,12 +11,6 @@
     path: /etc/kubernetes/manifests/kube-apiserver.yaml
   register: kubeadm_apiserver_manifest
 
-- name: generate a kubeadm token
-  command: "/usr/bin/kubeadm token generate"
-  register: generated_token
-  run_once: True
-  delegate_to: "{{ groups['primary_master']|first }}"
-
 - name: drop kubeadm template
   run_once: True
   delegate_to: "{{ groups['primary_master']|first }}"
@@ -26,10 +20,16 @@
   when: kubeadm_apiserver_manifest.stat.exists == False
 
 - name: run kubeadm init on primary master
-  shell: "/usr/bin/kubeadm init --config=/etc/kubernetes/kubeadm.conf  --skip-preflight-checks"
+  shell: "/usr/bin/kubeadm init --config=/etc/kubernetes/kubeadm.conf --skip-preflight-checks"
   delegate_to: "{{ groups['primary_master']|first }}"
   run_once: true
   when: kubeadm_apiserver_manifest.stat.exists == False
+
+- name: create a kubeadm token
+  command: "/usr/bin/kubeadm token create"
+  register: generated_token
+  run_once: True
+  delegate_to: "{{ groups['primary_master']|first }}"
 
 - name: slurp the ca certificate and key
   slurp: src=/etc/kubernetes/{{ item }}
