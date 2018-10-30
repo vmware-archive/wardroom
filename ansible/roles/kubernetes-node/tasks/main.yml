@@ -4,6 +4,10 @@
   register: kube_proxy_running
   ignore_errors: True
 
-- name: join nodes to masters
+- name: join nodes to masters by fqdn
+  command: "/usr/bin/kubeadm join {{ kubernetes_common_api_fqdn }}:6443 --token='{{ hostvars[groups['primary_master'][0]]['generated_token']['stdout'] }}' --discovery-token-unsafe-skip-ca-verification"
+  when: kube_proxy_running|failed and ((kubernetes_common_api_fqdn is defined) and (kubernetes_common_api_fqdn != None) and (kubernetes_common_api_fqdn|trim != ''))
+
+- name: join nodes to masters by ip
   command: "/usr/bin/kubeadm join {{ kubernetes_common_api_ip }}:6443 --token='{{ hostvars[groups['primary_master'][0]]['generated_token']['stdout'] }}' --discovery-token-unsafe-skip-ca-verification"
-  when: kube_proxy_running|failed
+  when: kube_proxy_running|failed and ((kubernetes_common_api_fqdn is not defined) or (kubernetes_common_api_fqdn == None) or (kubernetes_common_api_fqdn|trim == ''))
