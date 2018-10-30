@@ -1,8 +1,5 @@
 ---
-kubernetes_cni:
-  plugin: calico
-  calico:
-    manifest_url: "https://docs.projectcalico.org/v2.6/getting-started/kubernetes/installation/hosted/kubeadm/1.6/calico.yaml"
-    calicoctl_url: "https://github.com/projectcalico/calicoctl/releases/download/v1.6.1/calicoctl"
-  flannel:
-    manifest_url: "https://raw.githubusercontent.com/coreos/flannel/v0.10.0/Documentation/kube-flannel.yml"
+kubernetes_cni_plugin: calico
+kubernetes_cni_calico_manifest_url: "https://docs.projectcalico.org/v2.6/getting-started/kubernetes/installation/hosted/kubeadm/1.6/calico.yaml"
+kubernetes_cni_calico_calicoctl_url: "https://github.com/projectcalico/calicoctl/releases/download/v1.6.1/calicoctl"
+kubernetes_cni_flannel_manifest_url: "https://raw.githubusercontent.com/coreos/flannel/v0.10.0/Documentation/kube-flannel.yml"
