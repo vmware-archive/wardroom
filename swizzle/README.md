@@ -25,7 +25,13 @@ Assumes you have machines up and ready to use for your cluster.  They need to be
     $ cp extra_vars.yaml.example extra_vars.yaml
     ```
 
-3. Run the playbook.
+3. Tell ansible where to find the roles.
+
+    ```
+    $ export ANSIBLE_ROLES_PATH=../ansible/roles
+    ```
+
+4. Run the playbook.
 
     ```
     $ ansible-playbook -i inventory.ini swizzle.yml --extra-vars "@extra_vars.yaml"
