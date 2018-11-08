@@ -38,7 +38,9 @@
   hosts: masters
   become: yes
   roles:
-    - kubernetes-master
+    - role: etcd
+      when: False
+    - role: kubernetes-master
   tags:
     - kubernetes-master
 
