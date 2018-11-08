@@ -30,7 +30,8 @@
   hosts: masters:primary_master
   become: yes
   roles:
-    - kube-ucarp-vip
+    - role: kube-ucarp-vip
+      when: kube_ucarp_vip_enabled|bool == True
   tags:
     - kube-ucarp-vip
 
