@@ -91,7 +91,7 @@
       "base_image_ocid": "{{ user `oci_base_image_ocid` }}",
       "compartment_ocid": "{{ user `oci_compartment_ocid` }}",
       "image_name": "Canonical-Ubuntu-16.04-K8s-{{ user `kubernetes_version` }}-{{ timestamp }}",
-      "shape": "VM.Standard1.1",
+      "shape": "VM.Standard1.4",
       "ssh_username": "ubuntu",
       "subnet_ocid": "{{ user `oci_subnet_ocid` }}",
       "tags": {
