@@ -4,6 +4,33 @@
     path: /etc/kubernetes/manifests/kube-apiserver.yaml
   register: kubeadm_apiserver_manifest
 
+- name: create kubernetes pki directory
+  file:
+    dest: /etc/kubernetes/pki/etcd
+    state: directory
+    owner: root
+    group: root
+
+- name: slurp the etcd pki assets destined for the masters
+  slurp: src=/etc/kubernetes/pki/{{ item }}
+  with_items:
+    - apiserver-etcd-client.crt
+    - apiserver-etcd-client.key
+    - etcd/ca.crt
+  register: etcd_ca_pki
+  delegate_to: "{{ groups['etcd']|first }}"
+  run_once: true
+
+- name: add etcd pki assets
+  no_log: True
+  copy:
+    dest: "{{ item.source }}"
+    content: "{{ item.content | b64decode }}"
+    owner: root
+    group: root
+    mode: 0700
+  with_items: "{{ etcd_ca_pki.results }}"
+
 - name: drop kubeadm template
   template:
     src: etc/kubernetes/kubeadm.conf

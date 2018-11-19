@@ -8,3 +8,6 @@ kubernetes_master_kubeadm_config:
   apiServerCertSANs: "{{ kubernetes_common_api_ip | kube_lookup_hostname(kubernetes_common_api_fqdn, True) }}"
   etcd:
     endpoints: "{{ etcd_client_endpoints }}"
+    caFile: "/etc/kubernetes/pki/etcd/ca.crt"
+    certFile: "/etc/kubernetes/pki/apiserver-etcd-client.crt"
+    keyFile: "/etc/kubernetes/pki/apiserver-etcd-client.key"
