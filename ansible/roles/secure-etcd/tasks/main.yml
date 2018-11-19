@@ -1,0 +1,150 @@
+---
+### Create TLS assets using kubeadm
+- name: download standalone kubeadm for cert generation
+  get_url:
+    url: "{{ kubeadm_release_url }}"
+    dest: /usr/local/bin/kubeadm
+    mode: 0744
+    force: no
+
+- name: determine whether kubeadm needs to create etcd ca
+  stat:
+    path: "/etc/kubernetes/pki/etcd/{{ item }}"
+  with_items:
+    - ca.crt
+    - ca.key
+  register: etcd_ca
+
+- name: determine whether kubeadm needs to create etcd peer and server certs
+  stat:
+    path: "/etc/kubernetes/pki/etcd/{{ item }}"
+  with_items:
+    - peer.crt
+    - peer.key
+    - server.crt
+    - server.key
+  register: etcd_local_tls_assets
+
+- name: determine whether kubeadm needs to create the apiserver etcd client certs
+  stat:
+    path: "/etc/kubernetes/pki/{{ item }}"
+  with_items:
+    - apiserver-etcd-client.crt
+    - apiserver-etcd-client.key
+  register: apiserver_etcd_certs
+  delegate_to: "{{ groups['etcd'][0] }}"
+
+- name: create /etc/kubernetes directory
+  file:
+    dest: /etc/kubernetes
+    state: directory
+    owner: root
+    group: root
+
+- name: laydown etcd.conf to be used for cert generation
+  template:
+    src: etc/kubernetes/etcd.conf
+    dest: /etc/kubernetes/etcd.conf
+  with_items: "{{ etcd_ca.results }}"
+  when: item.stat.exists == False
+
+- name: generate etcd ca certs with kubeadm
+  command: "/usr/local/bin/kubeadm alpha phase certs etcd-ca"
+  delegate_to: "{{ groups['etcd'][0] }}"
+  run_once: True
+  with_items: "{{ etcd_ca.results }}"
+  when: item.stat.exists == False
+
+- name: generate apiserver client certs with kubeadm
+  command: "/usr/local/bin/kubeadm alpha phase certs apiserver-etcd-client"
+  delegate_to: "{{ groups['etcd'][0] }}"
+  run_once: True
+  with_items: "{{ apiserver_etcd_certs.results }}"
+  when: item.stat.exists == False
+
+- name: slurp the etcd ca certs
+  slurp:
+    src: /etc/kubernetes/pki/etcd/{{ item }}
+  with_items:
+    - ca.crt
+    - ca.key
+  register: etcd_ca_pki
+  delegate_to: "{{ groups['etcd'][0] }}"
+  run_once: True
+
+- name: create kubernetes pki directory
+  file:
+    dest: /etc/kubernetes/pki/etcd
+    state: directory
+    owner: root
+    group: root
+
+- name: add etcd ca cert to the rest of the etcd nodes
+  no_log: True
+  copy:
+    dest: "{{ item.source }}"
+    content: "{{ item.content | b64decode }}"
+    owner: root
+    group: root
+    mode: 0700
+  with_items: "{{ etcd_ca_pki.results }}"
+  when: inventory_hostname != groups['etcd']|first
+
+- name: generate etcd peer certs with kubeadm
+  command: "/usr/local/bin/kubeadm alpha phase certs etcd-peer --config=/etc/kubernetes/etcd.conf"
+  with_items: "{{ etcd_local_tls_assets.results }}"
+  when: item.stat.exists == False
+
+- name: generate etcd server certs with kubeadm
+  command: "/usr/local/bin/kubeadm alpha phase certs etcd-server --config=/etc/kubernetes/etcd.conf"
+  with_items: "{{ etcd_local_tls_assets.results }}"
+  when: item.stat.exists == False
+
+### Download and start etcd
+- name: download and extract etcd binaries
+  unarchive:
+    remote_src: True
+    src: "{{ etcd_release_url }}"
+    dest: /tmp
+    creates: /usr/local/bin/etcd
+  register: etcd_downloaded
+
+- name: move binaries into path
+  copy:
+    remote_src: True
+    src: "/tmp/etcd-{{ etcd_version }}-linux-amd64/{{ item }}"
+    dest: "/usr/local/bin/{{ item }}"
+  with_items:
+    - etcd
+    - etcdctl
+  when: etcd_downloaded is changed
+
+- name: set permissions on etcd binaries
+  file:
+    dest: "/usr/local/bin/{{ item }}"
+    mode: 0755
+    state: file
+  with_items:
+    - etcd
+    - etcdctl
+
+- name: create data directory
+  file:
+    dest: /var/lib/etcd
+    state: directory
+
+- name: etcd systemd template
+  template:
+    src: etc/systemd/system/etcd.service
+    dest: /etc/systemd/system/etcd.service
+  tags:
+    - etcd2
+  notify:
+    - restart etcd
+
+- name: enable and start the service
+  systemd:
+    name: etcd
+    daemon_reload: True
+    state: started
+    enabled: True

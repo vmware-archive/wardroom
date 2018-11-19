@@ -1,0 +1,34 @@
+[Unit]
+Description=etcd
+Documentation=https://github.com/coreos/etcd
+Conflicts=etcd.service
+Conflicts=etcd2.service
+
+[Service]
+Type=notify
+Restart=always
+RestartSec=5s
+LimitNOFILE=40000
+TimeoutStartSec=0
+
+ExecStart=/usr/local/bin/etcd \
+    --name={{ inventory_hostname }} \
+    --data-dir=/var/lib/etcd \
+    --listen-client-urls=https://{{hostvars[inventory_hostname]['ansible_' + etcd_interface]['ipv4']['address']}}:2379 \
+    --advertise-client-urls=https://{{hostvars[inventory_hostname]['ansible_' + etcd_interface]['ipv4']['address']}}:2379 \
+    --listen-peer-urls=https://{{hostvars[inventory_hostname]['ansible_' + etcd_interface]['ipv4']['address']}}:2380 \
+    --initial-advertise-peer-urls=https://{{hostvars[inventory_hostname]['ansible_' + etcd_interface]['ipv4']['address']}}:2380 \
+    --initial-cluster={{ etcd_cluster_endpoints }} \
+    --initial-cluster-token={{ etcd_cluster_token }} \
+    --initial-cluster-state=new \
+    --peer-trusted-ca-file=/etc/kubernetes/pki/etcd/ca.crt \
+    --peer-cert-file=/etc/kubernetes/pki/etcd/peer.crt \
+    --peer-key-file=/etc/kubernetes/pki/etcd/peer.key \
+    --peer-client-cert-auth=true \
+    --trusted-ca-file=/etc/kubernetes/pki/etcd/ca.crt \
+    --cert-file=/etc/kubernetes/pki/etcd/server.crt \
+    --key-file=/etc/kubernetes/pki/etcd/server.key \
+    --client-cert-auth=true
+
+[Install]
+WantedBy=multi-user.target
