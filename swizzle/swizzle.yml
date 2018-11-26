@@ -6,7 +6,7 @@
     - ansible-prereqs
 
 - name: install kubernetes prerequisites
-  hosts: all
+  hosts: all:!etcd
   become: yes
   roles:
     - common
