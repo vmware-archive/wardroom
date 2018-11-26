@@ -1,10 +1,9 @@
 ---
 - name: add docker dependencies
   yum:
-    name: "{{ item }}"
-  with_items:
-    - device-mapper-persistent-data
-    - lvm2
+    name: 
+      - device-mapper-persistent-data
+      - lvm2
 
 - name: add docker repo
   yum_repository:
