@@ -5,11 +5,12 @@ common_rpms:
 - python2-pip
 - python-requests
 - ebtables
--  socat
+- socat
 - ntp
 - jq
 - nfs-utils
 - cloud-utils
+- bind-utils
 common_extra_rpms: []
 common_debs:
 - openssh-client
@@ -23,5 +24,6 @@ common_debs:
 - jq
 - nfs-client
 - cloud-utils
+- dnsutils
 common_extra_debs: []
 common_redhat_epel_rpm: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm"
