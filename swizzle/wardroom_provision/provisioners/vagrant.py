@@ -25,6 +25,19 @@ from wardroom_provision.provisioners import Provisioner
 
 class VagrantProvisioner(Provisioner):
 
+    def __init__(self, box=None, env=None):
+        self._box = box
+        self._env = env
+
+    @property
+    def env(self):
+        env = dict(os.environ)
+        if self._env:
+            env.update(self._env)
+        if self._box:
+            env.update({'WARDROOM_BOX_NAME': self._box})
+        return env
+
     def provision(self):
         node_state = self._vagrant_status()
 
@@ -37,10 +50,6 @@ class VagrantProvisioner(Provisioner):
         if start_vms:
             self._vagrant_up()
 
-        #node_state = self._vagrant_status()
-        #inventory_file = generate_inventory(node_state)
-        #run_ansible(inventory_file, extra_args)
-
     @property
     def exported_vars(self):
         return {}
@@ -49,7 +58,7 @@ class VagrantProvisioner(Provisioner):
         """ Run `vagrant status` and parse the current vm state """
         node_state = {}
 
-        output = subprocess.check_output(['vagrant', 'status'])
+        output = subprocess.check_output(['vagrant', 'status'], env=self.env)
         for i, line in enumerate(output.splitlines()):
             if i < 2:
                 continue
@@ -62,11 +71,12 @@ class VagrantProvisioner(Provisioner):
 
     def _vagrant_up(self):
         """ Bring up the vm's with a `vagrant up`"""
-        subprocess.call(['vagrant', 'up', '--parallel'])
+        subprocess.call(['vagrant', 'up', '--parallel'], env=self.env)
 
     def _vagrant_ssh_config(self, tempfile):
         """ Get the current ssh config via `vagrant ssh-config` """
-        output = subprocess.check_output(['vagrant', 'ssh-config'])
+        output = subprocess.check_output(['vagrant', 'ssh-config'],
+                                         env=self.env)
         with open(tempfile, 'w') as fh:
             fh.write(output)
 
@@ -109,3 +119,6 @@ class VagrantProvisioner(Provisioner):
         print
 
         return temp_file
+
+    def teardown(self):
+        subprocess.call(['vagrant', 'destroy', '-f'], env=self.env)

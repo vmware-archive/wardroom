@@ -32,3 +32,7 @@ class Provisioner(object):
     @abc.abstractmethod
     def exported_vars(self):
         return None
+
+    @abc.abstractmethod
+    def teaardown(self):
+        return None

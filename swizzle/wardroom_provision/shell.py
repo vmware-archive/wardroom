@@ -21,14 +21,13 @@ import subprocess
 import sys
 import ConfigParser
 
-#from jsonpath_ng.ext import parse
-#from stevedore.driver import DriverManager
-#from stevedore.extension import ExtensionManager
-
 from wardroom_provision.profile import Profile
 
+WARDROOM_DEFAULT_PLAYBOOK = "swizzle.yml"
 
-def run_ansible(inventory_file, ssh_config=None, ssh_user=None, extra_vars=[], extra_args=[]):
+
+def run_ansible(inventory_file, ssh_config=None, ssh_user=None, extra_vars=[],
+                extra_args=[], playbook=WARDROOM_DEFAULT_PLAYBOOK):
     """ Run ansible playbook via subprocess.
     We do not want to link ansible as it is GPL """
 
@@ -55,9 +54,9 @@ def run_ansible(inventory_file, ssh_config=None, ssh_user=None, extra_vars=[], e
     if extra_vars:
         cmd += ['--extra-vars', extra_vars]
 
-    cmd.append("swizzle.yml")
-    print "running %s" % cmd
-    subprocess.call(cmd, env=ansible_env)
+    cmd.append(playbook)
+    print "Wardroom running %s" % (cmd)
+    return subprocess.call(cmd, env=ansible_env)
 
 
 def _load_profiles():
@@ -81,23 +80,36 @@ def _get_profile(name):
     raise Exception("Profile %s not found" % name)
 
 
-def provision(args):
+def provision(args, extra_args=[]):
     profile = _get_profile(args.profile)
     provisioner = profile.provisioner
-    #_get_provisioner(profile.provisioner)
     provisioner.provision()
 
     inventory_file = provisioner.generate_inventory()
     ssh_config = provisioner.ssh_config()
 
-    run_ansible(inventory_file, ssh_config, ssh_user=profile.ssh_username,  extra_vars=profile.extra_vars)
+    for playbook in (args.pre_playbook, args.playbook,
+                     args.post_playbook,):
+        if not playbook:
+            continue
+
+        rc = run_ansible(inventory_file, ssh_config,
+                ssh_user=profile.ssh_username,
+                extra_vars=profile.extra_vars,
+                extra_args=extra_args,
+                playbook=playbook)
+        if rc:
+            sys.exit(rc)
+        break
 
 
-def teardown(args):
-    raise NotImplemented()
+def teardown(args, extra_args=[]):
+    profile = _get_profile(args.profile)
+    provisioner = profile.provisioner
+    provisioner.teardown()
 
 
-def profile_list(args):
+def profile_list(args, extra_args=[]):
     profiles = _load_profiles()
     for _, profile in profiles.items():
         print "%s - %s" % (profile.name, profile.description)
@@ -109,6 +121,10 @@ def main():
 
     provision_parser = subparsers.add_parser('provision')
     provision_parser.add_argument('profile')
+    provision_parser.add_argument('--pre-playbook')
+    provision_parser.add_argument('--playbook',
+                                  default=WARDROOM_DEFAULT_PLAYBOOK)
+    provision_parser.add_argument('--post-playbook')
     provision_parser.set_defaults(func=provision)
 
     teardown_parser = subparsers.add_parser('teardown')
@@ -121,9 +137,8 @@ def main():
     profile_list_parser = profile_subparsers.add_parser('list')
     profile_list_parser.set_defaults(func=profile_list)
 
-    args = parser.parse_args()
-
-    args.func(args)
+    args, extra_args = parser.parse_known_args()
+    args.func(args, extra_args)
 
 
 if __name__ == '__main__':

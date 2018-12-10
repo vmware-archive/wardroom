@@ -35,6 +35,7 @@ JSONPATH_EXPORTED_VARS = {
 
 DEFAULT_TFSTATE_PATH = './terraform.tfstate'
 
+
 class TerraformEC2Provisioner(Provisioner):
 
     def __init__(self, terraform_path=None, tfstate_path=DEFAULT_TFSTATE_PATH):
@@ -53,7 +54,7 @@ class TerraformEC2Provisioner(Provisioner):
         cmd = ['terraform', 'apply']
         if self.terraform_path:
             cmd += [self.terraform_path]
-	subprocess.call(cmd)
+        subprocess.call(cmd)
 
     def ssh_config(self):
         return None
@@ -80,7 +81,7 @@ class TerraformEC2Provisioner(Provisioner):
                 if not isinstance(value, list):
                     value = [value]
                 for ip in value:
-                   config.set(group, ip)
+                    config.set(group, ip)
 
         config.write(sys.stdout)
         temp_file = tempfile.mkstemp()[1]
@@ -105,3 +106,5 @@ class TerraformEC2Provisioner(Provisioner):
             self._exported_vars = variables
         return self._exported_vars
 
+    def teardown(self):
+        raise NotImplemented()

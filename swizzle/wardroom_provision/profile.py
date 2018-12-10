@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
 import yaml
 
 from jinja2 import Template
@@ -48,16 +49,26 @@ class Profile(object):
 
     @property
     def extra_vars(self):
+
         variables = []
-        for key, val in self.ansible_overrides.items():
-            t = Template(val)
-            newval = t.render(**self.provisioner.exported_vars)
-            variables.append("%s=%s" % (key , newval))
-        return " ".join(variables)
+        def _walk_dict(node):
+            subnode = {}
+            for key, val in node.items():
+                if isinstance(val, dict):
+                   subnode[key] = _walk_dict(val)
+                else:
+                    if isinstance(val, str):
+                        t = Template(val)
+                        newval = t.render(**self.provisioner.exported_vars)
+                        subnode[key] = newval
+                    else:
+                        subnode[key] = val
+            return subnode
+
+        return json.dumps(_walk_dict(self.ansible_overrides))
 
     @staticmethod
     def from_yaml(filename):
         with open(filename, 'rb') as fh:
             data = yaml.load(fh)
             return Profile(**data)
-
