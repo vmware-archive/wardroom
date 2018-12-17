@@ -17,6 +17,6 @@ ansible_overrides:
   #  controllerManagerExtraArgs:
   #    cloud-provider: aws
   kubernetes_users:
-  - name: ubuntu
+  - user: ubuntu
     group: ubuntu
     home: /home/ubuntu
