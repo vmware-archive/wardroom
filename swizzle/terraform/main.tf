@@ -120,7 +120,7 @@ module "workers" {
 resource "aws_elb" "master_elb" {
   name                      = "master-elb"
   subnets                   = ["${module.k8s-vpc.subnet_id}"]
-  instances                 = ["${module.masters.cluster_instance_ids[0]}"]
+  instances                 = ["${module.masters.cluster_instance_ids}"]
   cross_zone_load_balancing = true
   security_groups           = ["${module.k8s-vpc.default_sg_id}", "${aws_security_group.k8s_sg.id}"]
 
@@ -132,7 +132,7 @@ resource "aws_elb" "master_elb" {
   }
 
   health_check {
-    target              = "TCP:22"
+    target              = "TCP:6443"
     healthy_threshold   = 2
     unhealthy_threshold = 2
     timeout             = 3
