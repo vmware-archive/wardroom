@@ -15,13 +15,14 @@
 # A simple tool for provisioning Vagrant hosts in parallel.
 
 import argparse
-import json
 import os
 import subprocess
 import sys
-import ConfigParser
 
 from wardroom_provision.profile import Profile
+
+from collections import OrderedDict
+from tabulate import tabulate
 
 WARDROOM_DEFAULT_PLAYBOOK = "swizzle.yml"
 
@@ -94,10 +95,10 @@ def provision(args, extra_args=[]):
             continue
 
         rc = run_ansible(inventory_file, ssh_config,
-                ssh_user=profile.ssh_username,
-                extra_vars=profile.extra_vars,
-                extra_args=extra_args,
-                playbook=playbook)
+                         ssh_user=profile.ssh_username,
+                         extra_vars=profile.extra_vars,
+                         extra_args=extra_args,
+                         playbook=playbook)
         if rc:
             sys.exit(rc)
         break
@@ -111,8 +112,14 @@ def teardown(args, extra_args=[]):
 
 def profile_list(args, extra_args=[]):
     profiles = _load_profiles()
-    for _, profile in profiles.items():
-        print "%s - %s" % (profile.name, profile.description)
+
+    headers = ["name", "description"]
+    rows = []
+
+    profs = OrderedDict(sorted(profiles.items(), key=lambda t: t[0]))
+    for _, profile in profs.items():
+        rows.append([profile.name, profile.description])
+    print (tabulate(rows, headers=headers, tablefmt="psql"))
 
 
 def main():
