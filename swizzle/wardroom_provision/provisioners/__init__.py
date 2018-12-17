@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import abc
+import socket
+import time
 
 
 class Provisioner(object):
@@ -34,5 +36,28 @@ class Provisioner(object):
         return None
 
     @abc.abstractmethod
-    def teaardown(self):
+    def teardown(self):
         return None
+
+    @abc.abstractproperty
+    def hosts(self):
+        return None
+
+    def wait_for_ssh(self, port=22, retries=10, interval=5):
+        for i in range(0, retries):
+            found_all = True
+            for host in self.hosts:
+                print "Checking host %s for ssh" % (host)
+                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                result = sock.connect_ex((host, port))
+                if result != 0:
+                    found_all = False
+                    break
+
+            if not found_all:
+                print "Waiting on ssh to become available"
+                time.sleep(interval)
+            else:
+                break
+
+

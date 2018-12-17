@@ -43,6 +43,23 @@ class TerraformEC2Provisioner(Provisioner):
         self.terraform_path = terraform_path
         self.tfstate_path = tfstate_path
         self._exported_vars = None
+        self._hosts = None
+        self._groups = None
+
+    @property
+    def hosts(self):
+        if not self._hosts:
+            hosts = set()
+            for _, ips in self.groups.items():
+                hosts |= set(ips)
+            self._hosts = hosts
+        return self._hosts
+
+    @property
+    def groups(self):
+        if not self._groups:
+            self._groups = self._discover_groups()
+        return self._groups
 
     def provision(self):
         cmd = ['terraform', 'init']
@@ -51,9 +68,15 @@ class TerraformEC2Provisioner(Provisioner):
         print cmd
         subprocess.call(cmd)
 
-        cmd = ['terraform', 'apply']
+        cmd = ['terraform', 'apply', '-auto-approve']
         if self.terraform_path:
             cmd += [self.terraform_path]
+        subprocess.call(cmd)
+
+        self.wait_for_ssh()
+
+    def teardown(self):
+        cmd = ['terraform', 'destroy']
         subprocess.call(cmd)
 
     def ssh_config(self):
@@ -64,7 +87,7 @@ class TerraformEC2Provisioner(Provisioner):
             'kubernetes_primary_interface': 'eth0'
         }
 
-    def generate_inventory(self):
+    def _discover_groups(self):
         filename = self.tfstate_path
         config = ConfigParser.RawConfigParser(allow_no_value=True)
 
@@ -72,8 +95,10 @@ class TerraformEC2Provisioner(Provisioner):
         with open(filename, 'rb') as fh:
             state = json.load(fh)
 
+        groups = {}
         for group, expression in JSONPATH_EXPRESSIONS.items():
-            config.add_section(group)
+            if not group in groups:
+                groups[group] = []
 
             expr = parse(expression)
             for match in expr.find(state):
@@ -81,7 +106,16 @@ class TerraformEC2Provisioner(Provisioner):
                 if not isinstance(value, list):
                     value = [value]
                 for ip in value:
-                    config.set(group, ip)
+                    groups[group].append(ip)
+        return groups
+
+    def generate_inventory(self):
+        config = ConfigParser.RawConfigParser(allow_no_value=True)
+        print self.groups
+        for group, ips in self.groups.items():
+            config.add_section(group)
+            for ip in ips:
+                config.set(group, ip)
 
         config.write(sys.stdout)
         temp_file = tempfile.mkstemp()[1]
@@ -107,4 +141,5 @@ class TerraformEC2Provisioner(Provisioner):
         return self._exported_vars
 
     def teardown(self):
-        raise NotImplemented()
+        cmd = ['terraform', 'destroy', '-auto-approve']
+        subprocess.call(cmd)
