@@ -1,19 +1,10 @@
 ---
-- name: update /etc/hosts to include cluster fqdn
-  lineinfile:
-    dest: /etc/hosts
-    line: "{{ kubernetes_common_api_ip }} {{ kubernetes_common_api_fqdn }}"
-    state: present
-  when: kubernetes_common_api_ip is defined and kubernetes_common_api_fqdn is defined
-
 - name: determine whether kubeadm needs to be run
   stat:
     path: /etc/kubernetes/manifests/kube-apiserver.yaml
   register: kubeadm_apiserver_manifest
 
 - name: drop kubeadm template
-  run_once: True
-  delegate_to: "{{ groups['primary_master']|first }}"
   template:
     src: etc/kubernetes/kubeadm.conf
     dest: /etc/kubernetes/kubeadm.conf
@@ -34,7 +25,6 @@
 - name: slurp the ca certificate and key
   slurp: src=/etc/kubernetes/{{ item }}
   with_items:
-    - kubeadm.conf
     - pki/apiserver.crt
     - pki/apiserver.key
     - pki/apiserver-kubelet-client.crt
