@@ -1,14 +1,22 @@
 ---
+- name: comment out any swap in fstab
+  lineinfile:
+    path: '/etc/fstab'
+    regexp: '^(.*\s+none\s+swap.*)'
+    line: '# removed by wardroom \1'
+    backrefs: yes
+  when: kubernetes_common_disable_swap|bool == True
+
 - name: disable swap
   command: swapoff -a
   when: kubernetes_common_disable_swap|bool == True
 
-- name: remove swap from /etc/fstab
-  mount:
-    name: swap
-    fstype: swap
-    state: absent
-  when: kubernetes_common_disable_swap|bool == True
+- name: update /etc/hosts to include cluster fqdn
+  lineinfile:
+    dest: /etc/hosts
+    line: "{{ kubernetes_common_api_ip }} {{ kubernetes_common_api_fqdn }}"
+    state: present
+  when: kubernetes_common_manage_etc_hosts and kubernetes_common_api_ip is defined and kubernetes_common_api_fqdn is defined
 
 - set_fact:
     kubernetes_node_ip: "{{ hostvars[inventory_hostname]['ansible_'~item]['ipv4']['address'] }}"
