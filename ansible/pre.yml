@@ -10,3 +10,8 @@
     retries: 3
     delay: 3
     until: output.rc == 0
+  - pip:
+      name:
+      - pyyaml
+      - requests
+      - jsonpath-ng
