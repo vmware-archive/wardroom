@@ -6,7 +6,7 @@
     - ansible-prereqs
 
 - name: install kubernetes prerequisites
-  hosts: all:!etcd
+  hosts: nodes:masters
   become: yes
   roles:
     - common
@@ -22,6 +22,8 @@
   hosts: etcd
   become: yes
   roles:
+    - common
+    - docker
     - etcd
   tags:
     - etcd
@@ -60,3 +62,11 @@
     - kubernetes-node
   tags:
     - kubernetes-node
+
+- name: setup kubernetes users
+  hosts: masters
+  become: yes
+  roles:
+    - kubernetes-user
+  tags:
+    - kubernetes-user
