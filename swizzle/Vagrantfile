@@ -5,40 +5,49 @@
 # configures the configuration version (we support older styles for
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
-MASTER_COUNT = 3
-NODE_COUNT = 1
+WARDROOM_MASTER_COUNT = ENV["WARDROOM_MASTER_COUNT"] || 3
+WARDROOM_NODE_COUNT = ENV["WARDROOM_NODE_COUNT"] || 1
+WARDROOM_BOX_NAME = ENV["WARDROOM_BOX_NAME"] || "generic/ubuntu1804"
+WARDROOM_NETWORK_NAME = ENV["WARDROOM_NETWORK_NAME"] || "wardroom-private"
 
 Vagrant.configure("2") do |config|
 
-  config.vm.box = "ubuntu/xenial64"
-  (1..MASTER_COUNT).each do |i|
+  config.vm.box = WARDROOM_BOX_NAME
+  (1..WARDROOM_MASTER_COUNT).each do |i|
+
     config.vm.define "master#{i}" do |subconfig|
       subconfig.vm.hostname = "master#{i}.local"
-      subconfig.vm.network :private_network,
-        :ip => "10.10.10.1#{i}",
-        :libvirt__forward_mode => "none",
-        :libvirt__network_name => "kubernetes",
-        :libvirt__netmask => "255.255.255.0",
-        :virtualbox__intnet => "kubenetwork"
-      subconfig.vm.provision "shell", inline: "ip route add 10.96.0.0/12 via 10.10.10.1#{i}"
-      subconfig.vm.provider "virtualbox" do |v|
+
+      subconfig.vm.provider "libvirt" do |l|
+        if system "lsmod | grep br_netfilter"
+          puts "You currently have br_netfilter loaded, and you will have a bad time"
+          exit!
+        end
+        l.management_network_name = WARDROOM_NETWORK_NAME
+        l.management_network_address = "10.10.10.0/24"
+        l.management_network_mode = "nat"
+      end
+
+     subconfig.vm.provider "virtualbox" do |v, override|
+        override.vm.network "private_network", :ip => "10.10.10.1#{i}", virtualbox__intnet: WARDROOM_NETWORK_NAME
   	v.memory = 1024
-  	v.customize ["modifyvm", :id, "--uartmode1", "disconnected"]
+        v.customize ["modifyvm", :id, "--uartmode1", "disconnected"]
       end
     end
   end
 
-  (1..NODE_COUNT).each do |i|
+  (1..WARDROOM_NODE_COUNT).each do |i|
     config.vm.define "node#{i}" do |subconfig|
       subconfig.vm.hostname = "node#{i}.local"
-      subconfig.vm.network :private_network,
-        :ip => "10.10.10.2#{i}",
-        :libvirt__forward_mode => "none",
-        :libvirt__network_name => "kubernetes",
-        :libvirt__netmask => "255.255.255.0",
-        :virtualbox__intnet => "kubenetwork"
-      subconfig.vm.provision "shell", inline: "ip route add 10.96.0.0/12 via 10.10.10.2#{i}"
-      subconfig.vm.provider "virtualbox" do |v|
+
+      subconfig.vm.provider "libvirt" do |l|
+        l.management_network_name = WARDROOM_NETWORK_NAME
+        l.management_network_address = "10.10.10.0/24"
+        l.management_network_mode = "nat"
+      end
+
+      subconfig.vm.provider "virtualbox" do |v, override|
+        override.vm.network "private_network", :ip => "10.10.10.2#{i}", virtualbox__intnet: WARDROOM_NETWORK_NAME
         v.memory = 4096
         v.customize ["modifyvm", :id, "--uartmode1", "disconnected"]
       end
