@@ -3,4 +3,4 @@ kube_ucarp_vip_enabled: True
 kube_ucarp_vip_vid: 41
 kube_ucarp_vip_address: 10.10.10.3/24
 kube_ucarp_vip_password: mypassword
-kube_ucarp_vip_interface: enp0s8
+kube_ucarp_vip_interface: eth0
