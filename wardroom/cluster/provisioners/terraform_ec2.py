@@ -13,12 +13,13 @@
 # limitations under the License.
 
 import json
-import subprocess
+import os
 import sys
 import tempfile
 import ConfigParser
 
-from wardroom_provision.provisioners import Provisioner
+from wardroom.cluster.provisioners import Provisioner
+from wardroom.util import run_command
 
 from jsonpath_ng.ext import parse
 
@@ -33,7 +34,7 @@ JSONPATH_EXPORTED_VARS = {
     'master_elb_dns_name': "$..modules[*].resources['aws_elb.master_elb'].primary.attributes.dns_name",
 }
 
-DEFAULT_TFSTATE_PATH = './terraform.tfstate'
+DEFAULT_TFSTATE_PATH = os.path.join(os.getcwd(), 'terraform.tfstate')
 
 
 class TerraformEC2Provisioner(Provisioner):
@@ -66,18 +67,20 @@ class TerraformEC2Provisioner(Provisioner):
         if self.terraform_path:
             cmd += [self.terraform_path]
         print cmd
-        subprocess.call(cmd)
+        run_command(cmd, 'terraform')
 
-        cmd = ['terraform', 'apply', '-auto-approve']
+        cmd = [
+            'terraform',
+            'apply',
+            '-auto-approve',
+            '-state',
+            self.tfstate_path,
+        ]
         if self.terraform_path:
             cmd += [self.terraform_path]
-        subprocess.call(cmd)
+        run_command(cmd, 'terraform')
 
         self.wait_for_ssh()
-
-    def teardown(self):
-        cmd = ['terraform', 'destroy']
-        subprocess.call(cmd)
 
     def ssh_config(self):
         return None
@@ -89,15 +92,13 @@ class TerraformEC2Provisioner(Provisioner):
 
     def _discover_groups(self):
         filename = self.tfstate_path
-        config = ConfigParser.RawConfigParser(allow_no_value=True)
-
         state = None
         with open(filename, 'rb') as fh:
             state = json.load(fh)
 
         groups = {}
         for group, expression in JSONPATH_EXPRESSIONS.items():
-            if not group in groups:
+            if group not in groups:
                 groups[group] = []
 
             expr = parse(expression)
@@ -141,5 +142,11 @@ class TerraformEC2Provisioner(Provisioner):
         return self._exported_vars
 
     def teardown(self):
-        cmd = ['terraform', 'destroy', '-auto-approve']
-        subprocess.call(cmd)
+        cmd = [
+            'terraform',
+            'destroy',
+            '-auto-approve',
+            '-state',
+            self.tfstate_path,
+        ]
+        run_command(cmd, 'terraform')

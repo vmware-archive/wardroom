@@ -12,13 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
-
-ROOT = os.path.abspath(os.path.dirname(__file__))
-
-
-def get_data_path(path):
-    path = os.path.join(ROOT, 'data', path)
-    if not os.path.isdir(path):
-        raise Exception("Could not find package directory for %s" % path)
-    return path
+from build import get_builder_names, image_build  # noqa

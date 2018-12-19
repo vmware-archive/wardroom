@@ -20,7 +20,8 @@ import sys
 import tempfile
 import ConfigParser
 
-from wardroom_provision.provisioners import Provisioner
+from wardroom.cluster.provisioners import Provisioner
+from wardroom.util import run_command
 
 
 class VagrantProvisioner(Provisioner):
@@ -62,7 +63,7 @@ class VagrantProvisioner(Provisioner):
         for i, line in enumerate(output.splitlines()):
             if i < 2:
                 continue
-            parts = re.split('\s+', line)
+            parts = re.split(r'\s+', line)
             if len(parts) == 3:
                 node_state[parts[0]] = parts[1]
             elif len(parts) == 4:
@@ -71,7 +72,8 @@ class VagrantProvisioner(Provisioner):
 
     def _vagrant_up(self):
         """ Bring up the vm's with a `vagrant up`"""
-        subprocess.call(['vagrant', 'up', '--parallel'], env=self.env)
+        cmd = ['vagrant', 'up', '--parallel']
+        run_command(cmd, 'swizzle', env=self.env)
 
     def _vagrant_ssh_config(self, tempfile):
         """ Get the current ssh config via `vagrant ssh-config` """
@@ -121,4 +123,5 @@ class VagrantProvisioner(Provisioner):
         return temp_file
 
     def teardown(self):
-        subprocess.call(['vagrant', 'destroy', '-f'], env=self.env)
+        cmd = ['vagrant', 'destroy', '-f']
+        run_command(cmd, 'swizzle', env=self.env)

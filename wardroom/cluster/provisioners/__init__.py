@@ -59,5 +59,3 @@ class Provisioner(object):
                 time.sleep(interval)
             else:
                 break
-
-

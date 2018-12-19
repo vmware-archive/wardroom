@@ -18,7 +18,7 @@ import yaml
 from jinja2 import Template
 from stevedore.driver import DriverManager
 
-PROVISIONER_NAMESPACE = "wardroom_provision.provisioners"
+PROVISIONER_NAMESPACE = "wardroom.cluster.provisioners"
 
 
 class Profile(object):
@@ -50,12 +50,11 @@ class Profile(object):
     @property
     def extra_vars(self):
 
-        variables = []
         def _walk_dict(node):
             subnode = {}
             for key, val in node.items():
                 if isinstance(val, dict):
-                   subnode[key] = _walk_dict(val)
+                    subnode[key] = _walk_dict(val)
                 else:
                     if isinstance(val, str):
                         t = Template(val)

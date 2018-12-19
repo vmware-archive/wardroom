@@ -13,12 +13,22 @@
 # limitations under the License.
 
 import os
+import subprocess
 
-ROOT = os.path.abspath(os.path.dirname(__file__))
+from wardroom import get_data_path
 
 
-def get_data_path(path):
-    path = os.path.join(ROOT, 'data', path)
-    if not os.path.isdir(path):
-        raise Exception("Could not find package directory for %s" % path)
-    return path
+def run_command(command, data_path, env=None, fail_on_error=True):
+    cwd = get_data_path(data_path)
+
+    cmdenv = os.environ.copy()
+    if env:
+        cmdenv.update(env)
+
+    print command
+    print cwd
+    rc = subprocess.call(command, cwd=cwd, env=cmdenv)
+
+    if rc != 0:
+        raise Exception("Command %s failed with exit %s" % (command, rc))
+    return rc
