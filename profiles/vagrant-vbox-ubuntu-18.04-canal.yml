@@ -1,0 +1,37 @@
+---
+name: vagrant-vbox-bionic-canal
+description: Vagrant profile for kubernetes with a virtualbox provider with canal CNI
+provisioner_name: vagrant
+provisioner_args:
+  box: generic/ubuntu1804
+  env:
+    VAGRANT_DEFAULT_PROVIDER: virtualbox
+ansible_overrides:
+  docker_debian_version: 18.03.1~ce~3-0~ubuntu
+  kubernetes_common_primary_interface: eth1
+  etcd_interface: eth1
+  kube_ucarp_vip_interface: eth1
+  kubernetes_cni_plugin: canal
+  kubernetes_cni_calico_manifest_mods:
+  - conditions:
+    - expression: kind
+      value: DaemonSet
+    modifications:
+    - expression: "spec.template.spec.containers[?(@.name == 'calico-node')].env[?(@.name == 'CALICO_IPV4POOL_CIDR')].value"
+      value: "172.16.0.0/16"
+    - expression: "spec.template.spec.containers[?(@.name == 'calico-node')].env[?(@.name == 'IP')].name"
+      value: "IP_AUTODETECTION_METHOD"
+    - expression: "spec.template.spec.containers[?(@.name == 'calico-node')].env[?(@.name == 'IP_AUTODETECTION_METHOD')].value"
+      value: "interface=eth1"
+  - conditions:
+    - expression: metadata.name
+      value: canal-config
+    modifications:
+    - expression: data.canal_iface
+      value: eth1
+  kubernetes_master_kubeadm_config:
+    networking:
+      podSubnet: "172.16.0.0/16"
+#    controllerManagerExtraArgs:
+#      allocate-node-cidrs: "true"
+#      cluster-cidr: "172.16.0.0/16"
