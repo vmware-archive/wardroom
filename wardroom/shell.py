@@ -18,7 +18,7 @@ import sys
 
 from wardroom.cluster import cluster_profile_list, cluster_provision, cluster_teardown  # noqa
 from wardroom.cluster.provision import WARDROOM_DEFAULT_PLAYBOOK
-from wardroom.image import get_aws_regions, get_builder_names, image_aws_distribute, image_build  # noqa
+from wardroom.image import get_builder_names, image_aws_distribute, image_build  # noqa
 
 
 def _setup_logger(level=logging.INFO):
@@ -59,7 +59,6 @@ def main():
     image_aws_distrib_parser.add_argument('region')
     image_aws_distrib_parser.add_argument('ami')
     image_aws_distrib_parser.add_argument('--limit', '-l',
-                                          choices=get_aws_regions(),
                                           nargs='+',
                                           help="limit destination regions")
     image_aws_distrib_parser.set_defaults(func=image_aws_distribute)
