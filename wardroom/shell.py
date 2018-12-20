@@ -13,10 +13,23 @@
 # limitations under the License.
 
 import argparse
+import logging
+import sys
 
 from wardroom.cluster import cluster_profile_list, cluster_provision, cluster_teardown  # noqa
 from wardroom.cluster.provision import WARDROOM_DEFAULT_PLAYBOOK
-from wardroom.image import get_builder_names, image_build
+from wardroom.image import get_aws_regions, get_builder_names, image_aws_distribute, image_build  # noqa
+
+
+def _setup_logger(level=logging.INFO):
+    logger = logging.getLogger()
+    logger.setLevel(level)
+    log_handler = logging.StreamHandler(sys.stdout)
+    fmt = logging.Formatter(fmt='%(asctime)s %(threadName)s %(name)s '
+                            '%(levelname)s: %(message)s',
+                            datefmt='%F %H:%M:%S')
+    log_handler.setFormatter(fmt)
+    logger.addHandler(log_handler)
 
 
 def main():
@@ -33,8 +46,22 @@ def main():
                                     help='unique build string for the image')
     image_build_parser.add_argument('--builders', '-b',
                                     choices=get_builder_names(),
-                                    nargs='+', help="nameof builders to use")
+                                    nargs='+', help="name of builders to use")
     image_build_parser.set_defaults(func=image_build)
+
+    # image aws
+    image_aws_parser = image_subparsers.add_parser('aws')
+    image_aws_subparsers = image_aws_parser.add_subparsers()
+
+    # image aws distribute
+    image_aws_distrib_parser = image_aws_subparsers.add_parser('distribute')
+    image_aws_distrib_parser.add_argument('region')
+    image_aws_distrib_parser.add_argument('ami')
+    image_aws_distrib_parser.add_argument('--limit', '-l',
+                                          choices=get_aws_regions(),
+                                          nargs='+',
+                                          help="limit destination regions")
+    image_aws_distrib_parser.set_defaults(func=image_aws_distribute)
 
     # cluster
     cluster_parser = subparsers.add_parser('cluster')
@@ -63,6 +90,12 @@ def main():
     cluster_profile_list_parser.set_defaults(func=cluster_profile_list)
 
     args, extra_args = parser.parse_known_args()
+
+    log_level = logging.INFO
+    if args.debug:
+        log_level = logging.DEBUG
+    _setup_logger(log_level)
+
     args.func(args, extra_args)
 
 

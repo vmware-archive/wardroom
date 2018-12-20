@@ -12,4 +12,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from build import get_builder_names, image_build  # noqa
+from aws import get_aws_regions, image_aws_distribute
+from build import get_builder_names, image_build
