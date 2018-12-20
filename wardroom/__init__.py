@@ -13,12 +13,13 @@
 # limitations under the License.
 
 import os
+import sys
 
-ROOT = os.path.abspath(os.path.dirname(__file__))
+WARDROOM_DATA_DIR = "wardroom_data"
 
 
 def get_data_path(path):
-    path = os.path.join(ROOT, 'data', path)
+    path = os.path.join(sys.prefix, WARDROOM_DATA_DIR, path)
     if not os.path.isdir(path):
         raise Exception("Could not find package directory for %s" % path)
     return path
