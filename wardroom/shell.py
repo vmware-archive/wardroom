@@ -34,6 +34,7 @@ def _setup_logger(level=logging.INFO):
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument('--debug', '-d', action='store_true')
     subparsers = parser.add_subparsers()
 
     # image
