@@ -4,6 +4,7 @@ kubernetes_cni_version: "{{ kubernetes.cni_version if kubernetes_cni_version_def
 kubernetes_enable_cached_images: "{{ kubernetes.enable_cached_images if kubernetes_enable_cached_images_defined else False }}"
 kubernetes_cached_images: "{{ kubernetes.cached_images if kubernetes_cached_images_defined else [] }}"
 kubernetes_apt_key_url: "{{ kubernetes.apt_key_url if kubernetes_apt_key_url_defined else 'https://packages.cloud.google.com/apt/doc/apt-key.gpg' }}"
-kubernetes_apt_repo_string: "{{ kubernetes.apt_repo_string if kubernetes_apt_repo_string_defined else 'deb http://apt.kubernetes.io/ kubernetes-' ~ ansible_distribution_release | lower ~ ' main' }}"
+# Hardcoded the xenial apt repo due to upstream releasing only xenial artifacts.
+kubernetes_apt_repo_string: "{{ kubernetes.apt_repo_string if kubernetes_apt_repo_string_defined else 'deb http://apt.kubernetes.io/ kubernetes-xenial main' }}"
 kubernetes_yum_baseurl: "{{ kubernetes.yum_baseurl if kubernetes_yum_baseurl_defined else 'https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64' }}"
 kubernetes_yum_gpgkey: "{{ kubernetes.yum_gpgkey if kubernetes_yum_gpgkey_defined else 'https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg' }}"

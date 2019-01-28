@@ -4,7 +4,7 @@ A tool for creating Kubernetes-ready base operating system images. wardroom leve
 
 supported operating systems
 ---------------------------
-- Ubuntu 16.04 (Xenial)
+- Ubuntu 18.04 (Bionic)
 - CentOS 7
 
 currently supported image formats (more to follow)
