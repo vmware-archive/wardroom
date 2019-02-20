@@ -1,0 +1,5 @@
+{
+    "ubuntu_18_04_ami": "ami-0c55b159cbfafe1f0",
+    "centos_7_4_ami": "ami-08b08d6d",
+    "aws_region": "us-east-2"
+}
