@@ -1,4 +1,6 @@
 {
+    "ubuntu_16_04_ami": "ami-0565af6e282977273",
     "ubuntu_18_04_ami": "ami-034920e38d95c9311",
-    "centos_7_4_ami": "ami-b81dbfc5"
+    "centos_7_4_ami": "ami-b81dbfc5",
+    "aws_region": "us-east-1"
 }

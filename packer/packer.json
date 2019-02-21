@@ -31,6 +31,27 @@
       }
     },
     {
+      "name": "ami-ubuntu-1604",
+      "type": "amazon-ebs",
+      "instance_type": "t2.small",
+      "source_ami": "{{user `ubuntu_16_04_ami`}}",
+      "ami_name": "ami-ubuntu-16.04-{{user `kubernetes_version`}}-{{timestamp}}",
+      "access_key": "{{user `aws_access_key`}}",
+      "secret_key": "{{user `aws_secret_key`}}",
+      "region": "{{user `aws_region`}}",
+      "ssh_username": "ubuntu",
+      "tags": {
+        "build_version": "{{user `build_version`}}",
+        "source_ami": "{{user `ubuntu_16_04_ami`}}",
+        "build_date": "{{isotime}}",
+        "distribution": "Ubuntu",
+        "distribution_release": "xenial",
+        "distribution_version": "16.04",
+        "kubernetes_version": "{{user `kubernetes_version`}}",
+        "kubernetes_cni_version": "{{user `kubernetes_cni_version`}}"
+      }
+    },
+    {
       "name": "ami-centos",
       "type": "amazon-ebs",
       "instance_type": "t2.small",

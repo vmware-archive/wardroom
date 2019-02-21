@@ -9,12 +9,21 @@
     repo: "deb [arch=amd64] https://download.docker.com/linux/{{ ansible_distribution|lower}} {{ ansible_distribution_release|lower }} stable"
     update_cache: true
 
-- name: install docker
+- name: install Docker CE (Ubuntu Bionic only)
   apt:
     name: "{{ item }}"
     state: present
   with_items:
     - "docker-ce={{ docker_debian_version }}"
+  when: ansible_distribution == 'Ubuntu' and ansible_distribution_release == 'bionic'
+
+- name: Install Docker CE (Ubuntu Xenial only)
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "docker-ce={{ docker_xenial_version }}"
+  when: ansible_distribution == 'Ubuntu' and ansible_distribution_release == 'xenial'
 
 - name: install docker-py
   pip:
