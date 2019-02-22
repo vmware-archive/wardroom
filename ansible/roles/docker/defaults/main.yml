@@ -2,4 +2,4 @@
 docker_debian_version: "{{ docker.debian.version if docker_debian_version_defined else '5:18.09.1~3-0~ubuntu-bionic' }}"
 docker_redhat_version: "{{ docker.redhat.version if docker_redhat_version_defined else '17.03.2.ce' }}"
 docker_logging_max_size: 100m
-docker_xenial_version: "17.03.2~ce-0~ubuntu-xenial"
+docker_xenial_version: "18.06.3~ce~3-0~ubuntu"
