@@ -15,3 +15,24 @@
   file:
     dest: /etc/machine-id
     state: touch
+
+- name: Clean up extraneous /etc/hosts entries
+  lineinfile:
+    path: /etc/hosts
+    state: absent
+    regexp: '^127\.0\.1\.1.*instance.*'
+
+- name: Check for saved iptables configuration
+  stat:
+    path: /etc/iptables/rules.v4
+  register: iptablescfg
+
+- name: Remove overly restrictive iptables rules if saved configuration exists
+  lineinfile:
+    path: /etc/iptables/rules.v4
+    state: absent
+    regexp: "{{ item }}"
+  with_items:
+    - "^-A INPUT -j REJECT --reject-with icmp-host-prohibited$"
+    - "^-A FORWARD -j REJECT --reject-with icmp-host-prohibited$"
+  when: iptablescfg.stat.exists == True
