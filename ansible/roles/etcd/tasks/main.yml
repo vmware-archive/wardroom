@@ -32,7 +32,7 @@
     - apiserver-etcd-client.crt
     - apiserver-etcd-client.key
   register: apiserver_etcd_certs
-  delegate_to: "{{ groups['etcd'][0] }}"
+  delegate_to: "{{ groups['etcd']|first }}"
 
 - name: create /etc/kubernetes directory
   file:
@@ -50,14 +50,14 @@
 
 - name: generate etcd ca certs with kubeadm
   command: "/usr/local/bin/kubeadm alpha phase certs etcd-ca"
-  delegate_to: "{{ groups['etcd'][0] }}"
+  delegate_to: "{{ groups['etcd']|first }}"
   run_once: True
   with_items: "{{ etcd_ca.results }}"
   when: item.stat.exists == False
 
 - name: generate apiserver client certs with kubeadm
   command: "/usr/local/bin/kubeadm alpha phase certs apiserver-etcd-client"
-  delegate_to: "{{ groups['etcd'][0] }}"
+  delegate_to: "{{ groups['etcd']|first }}"
   run_once: True
   with_items: "{{ apiserver_etcd_certs.results }}"
   when: item.stat.exists == False
@@ -69,7 +69,7 @@
     - ca.crt
     - ca.key
   register: etcd_ca_pki
-  delegate_to: "{{ groups['etcd'][0] }}"
+  delegate_to: "{{ groups['etcd']|first }}"
   run_once: True
 
 - name: create kubernetes pki directory
