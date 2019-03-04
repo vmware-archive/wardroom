@@ -2,19 +2,19 @@ package:
   docker-ce:
     installed: true
     versions:
-    - 5:18.09.1~3-0~ubuntu-bionic
+    - {{ .Vars.docker_version }}
   kubeadm:
     installed: true
     versions:
-    - 1.13.2-00
+    - {{ .Vars.k8s_version }}
   kubectl:
     installed: true
     versions:
-    - 1.13.2-00
+    - {{ .Vars.k8s_version }}
   kubelet:
     installed: true
     versions:
-    - 1.13.2-00
+    - {{ .Vars.k8s_version }}
 mount:
   swap:
     exists: false

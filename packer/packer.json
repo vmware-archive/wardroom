@@ -145,8 +145,9 @@
     {
       "type": "goss",
       "tests": [
-        "goss.yaml"
-      ]
+        "goss/goss.yaml"
+      ],
+      "vars_file": "goss/{{user `kubernetes_version`}}.yaml"
     }
   ]
 }
