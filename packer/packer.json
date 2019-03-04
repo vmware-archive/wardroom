@@ -141,6 +141,12 @@
         "--extra-vars",
         "common_upgrade_base=true kubernetes_version={{user `kubernetes_version`}} kubernetes_cni_version={{user `kubernetes_cni_version`}}"
       ]
+    },
+    {
+      "type": "goss",
+      "tests": [
+        "goss.yaml"
+      ]
     }
   ]
 }
