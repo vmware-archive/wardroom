@@ -1,0 +1,79 @@
+---
+- name: install ansible prerequisutess
+  import_playbook: ../ansible/pre.yml
+  tags:
+    - prereqs
+    - ansible-prereqs
+
+- name: install test loadbalancer
+  hosts: loadbalancer
+  become: yes
+  pre_tasks:
+  - setup:
+    delegate_to: "{{ item }}"
+    delegate_facts: True
+    with_items: "{{ groups['masters'] }}"
+  roles:
+    - role: common
+      when: common_enable|bool
+    - role: docker
+      when: docker_enable|bool
+    - role: test_loadbalancer
+      when: test_loadbalancer_enable|bool == True
+
+- name: install kubernetes prerequisites
+  hosts: nodes:masters
+  become: yes
+  roles:
+    - role: common
+      when: common_enable|bool
+    - role: docker
+      when: docker_enable|bool
+    - kubernetes
+    - kubernetes-common
+  tags:
+    - prereqs
+    - kubernetes-prereqs
+    - kubernetes-common
+
+- name: install etcd
+  hosts: etcd
+  become: yes
+  roles:
+    - etcd
+  tags:
+    - etcd
+
+- name: create kubernetes primary master
+  hosts: masters
+  become: yes
+  roles:
+    - role: etcd
+      when: False # we set this to false merely so that we can gather default vars
+    - role: kubernetes-master
+  tags:
+    - kubernetes-master
+
+- name: install CNI
+  hosts: all
+  become: yes
+  roles:
+    - kubernetes-cni
+  tags:
+    - kubernetes-cni
+
+- name: create kubernetes nodes
+  hosts: nodes
+  become: yes
+  roles:
+    - kubernetes-node
+  tags:
+    - kubernetes-node
+
+- name: setup kubernetes users
+  hosts: masters
+  become: yes
+  roles:
+    - kubernetes-user
+  tags:
+    - kubernetes-user

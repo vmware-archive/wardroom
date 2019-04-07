@@ -1,0 +1,29 @@
+---
+all:
+  vars:
+    docker_debian_version: "18.03.1~ce~3-0~ubuntu"
+{% if vagrant_provider == 'libvirt' %}
+    kubernetes_common_primary_interface: eth0
+    etcd_interface: eth0
+    test_loadbalancer_interface: eth0
+{% elif vagrant_provider == 'virtualbox' %}
+    kubernetes_common_primary_interface: eth1
+    etcd_interface: eth1
+    test_loadbalancer_interface: eth1
+{% endif %}
+    kubernetes_common_api_ip: "{{ loadbalancer_ip }}"
+    kubernetes_common_api_fqdn: "k8s.example.com"
+    kubernetes_cni_plugin: canal
+    kubernetes_cni_canal_manifest_mods:
+    - conditions:
+      - expression: metadata.name
+        value: canal
+      modifications:
+      - expression: "spec.template.spec.containers[?(@.name == 'calico-node')].env[?(@.name == 'CALICO_IPV4POOL_CIDR')].value"
+        value: "172.16.0.0/16"
+    kubernetes_master_kubeadm_config:
+      apiServerCertSANs:
+      - "{{ loadbalancer_ip }}"
+      networking:
+        podSubnet: "172.16.100.0/16"
+    test_loadbalancer_enable: True
