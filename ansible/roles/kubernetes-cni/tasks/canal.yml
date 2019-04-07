@@ -1,0 +1,18 @@
+---
+- name: pull manifest and apply any modifications
+  run_once: True
+  delegate_to: "{{ groups['masters'][0] }}"
+  modify_manifest:
+    manifest_url: "{{ kubernetes_cni_canal_manifest_url }}"
+    output_path: /tmp/canal.yml
+    rules: "{{ kubernetes_cni_canal_manifest_mods }}"
+
+- name: install CNI rbac
+  command: "/usr/bin/kubectl apply -f {{ item }}"
+  run_once: True
+  delegate_to: "{{ groups['masters'][0] }}"
+  retries: 10
+  delay: 5
+  with_items:
+  - "{{ kubernetes_cni_canal_rbac_manifest_url }}"
+  - /tmp/canal.yml
