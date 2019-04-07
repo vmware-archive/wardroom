@@ -26,14 +26,6 @@
   tags:
     - etcd
 
-- name: add kube-ucarp-vip static pod
-  hosts: masters:primary_master
-  become: yes
-  roles:
-    - kube-ucarp-vip
-  tags:
-    - kube-ucarp-vip
-
 - name: create kubernetes primary master
   hosts: masters
   become: yes
