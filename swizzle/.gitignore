@@ -1,2 +1,6 @@
+*.diff
+*.swp
+*.swo
+*.pyc
 *.retry
 .vagrant
