@@ -1,13 +1,25 @@
 ---
-- name: install CNI netowrking
-  command: "/usr/bin/kubectl apply -f {{ kubernetes_cni.calico.manifest_url }}"
+- name: pull manifest and apply any modifications
   run_once: True
   delegate_to: "{{ groups['masters'][0] }}"
+  modify_manifest:
+    manifest_url: "{{ kubernetes_cni_calico_manifest_url }}"
+    output_path: /tmp/calico.yml
+    rules: "{{ kubernetes_cni_calico_manifest_mods }}"
+
+- name: install CNI netowrking
+  command: "/usr/bin/kubectl apply -f {{ item }}"
+  run_once: True
+  delegate_to: "{{ groups['masters'][0] }}"
+  with_items:
+    - "{{ kubernetes_cni_calico_rbac_url }}"
+    - /tmp/calico.yml
 
 - name: install calicoctl
   get_url:
-     url: "{{ kubernetes_cni.calico.calicoctl_url }}"
+     url: "{{ kubernetes_cni_calico_calicoctl_url }}"
      dest: /usr/bin/calicoctl
      mode: 0755
   retries: 10
   delay: 5
+  when: kubernetes_cni_calico_install_calicoctl is defined and kubernetes_cni_calico_install_calicoctl|bool == True
