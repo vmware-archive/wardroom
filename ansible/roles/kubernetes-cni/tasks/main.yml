@@ -1,4 +1,9 @@
 ---
+- pip:
+    name:
+    - pyyaml
+    - jsonpath-ng
+
 - include_tasks: calico.yml
   when: kubernetes_cni_plugin == "calico"
 
