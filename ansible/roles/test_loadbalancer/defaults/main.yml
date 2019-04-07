@@ -1,2 +1,3 @@
 ---
 test_loadbalancer_enable: False
+test_loadbalancer_interface: eth0
