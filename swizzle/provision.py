@@ -172,7 +172,7 @@ def state_purpose():
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-a', '--action', default='install',
-                        choices=['install'])
+                        choices=['install', "upgrade"])
     parser.add_argument('-o', '--os', default='xenial',
                         choices=WARDROOM_BOXES.keys())
     parser.add_argument('config')

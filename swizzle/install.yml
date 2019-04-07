@@ -5,6 +5,10 @@
     - prereqs
     - ansible-prereqs
 
+- tasks:
+  - set_fact:
+      wardroom_action: 'install'
+
 - name: install test loadbalancer
   hosts: loadbalancer
   become: yes

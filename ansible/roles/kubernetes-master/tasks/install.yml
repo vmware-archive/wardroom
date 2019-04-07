@@ -1,0 +1,73 @@
+---
+- name: drop kubeadm template
+  run_once: True
+  delegate_to: "{{ groups['primary_master']|first }}"
+  template:
+    src: etc/kubernetes/kubeadm.conf
+    dest: /etc/kubernetes/kubeadm.conf
+  when: wardroom_action == 'upgrade' or kubeadm_apiserver_manifest.stat.exists == False
+
+- name: run kubeadm init on primary master
+  shell: "/usr/bin/kubeadm init --config=/etc/kubernetes/kubeadm.conf  --skip-preflight-checks"
+  delegate_to: "{{ groups['primary_master']|first }}"
+  run_once: true
+  when: kubeadm_apiserver_manifest.stat.exists == False
+
+- name: slurp the ca certificate and key
+  slurp: src=/etc/kubernetes/{{ item }}
+  with_items:
+    - kubeadm.conf
+    - pki/apiserver.crt
+    - pki/apiserver.key
+    - pki/apiserver-kubelet-client.crt
+    - pki/apiserver-kubelet-client.key
+    - pki/ca.crt
+    - pki/ca.key
+    - pki/front-proxy-ca.crt
+    - pki/front-proxy-ca.key
+    - pki/front-proxy-client.crt
+    - pki/front-proxy-client.key
+    - pki/sa.key
+    - pki/sa.pub
+  register: kube_pki
+  delegate_to: "{{ groups['primary_master']|first }}"
+  run_once: true
+
+- name: create kubernetes pki directory
+  file:
+    dest: /etc/kubernetes/pki/
+    state: directory
+    owner: root
+    group: root
+
+- name: add kube pki assets
+  no_log: True
+  copy:
+    dest: "{{ item.source }}"
+    content: "{{ item.content | b64decode }}"
+    owner: root
+    group: root
+    mode: 0700
+  with_items: "{{ kube_pki.results }}"
+  when: inventory_hostname != groups['primary_master']|first
+
+- name: initialize secondary masters
+  command: "/usr/bin/kubeadm init --config=/etc/kubernetes/kubeadm.conf --skip-preflight-checks"
+  when: kubeadm_apiserver_manifest.stat.exists == False and inventory_hostname != groups['primary_master']|first
+
+- name: create kubernetes config directory
+  file:
+    dest: "{{ ansible_user_dir }}/.kube/"
+    state: directory
+    owner: "{{ ansible_user_id }}"
+    mode: 0600
+
+- name: copy kubernetes config to home directory
+  command: "cp /etc/kubernetes/admin.conf {{ ansible_user_dir}}/.kube/config"
+
+- name: set config permissions
+  file:
+    dest: "{{ ansible_user_dir}}/.kube/config"
+    owner: "{{ ansible_user_id }}"
+    mode: 0600
+    state: file
