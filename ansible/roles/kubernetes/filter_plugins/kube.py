@@ -6,6 +6,7 @@ class FilterModule(object):
     def filters(self):
         return {
             'kube_platform_version': self.kube_platform_version,
+            'kube_debian_distro_version': self.kube_debian_distro_version,
         }
 
     def kube_platform_version(self, version, platform):
@@ -26,3 +27,8 @@ class FilterModule(object):
                 return version
 
         raise Exception("Could not parse kubernetes version")
+
+    def kube_debian_distro_version(self, distro):
+        if distro.lower() in ("xenial", "bionic",):
+            return "kubernetes-xenial"
+        return "kubernetes-%s" % distro.lower()
