@@ -1,0 +1,3 @@
+---
+kubernetes_users:
+- { user: vagrant, group: vagrant, home: /home/vagrant }

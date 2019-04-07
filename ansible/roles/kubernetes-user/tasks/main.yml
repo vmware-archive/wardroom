@@ -1,0 +1,31 @@
+---
+- name: create .kube directories in user's home
+  file:
+    path: "{{ item.home }}/.kube"
+    state: absent
+  with_items: "{{ kubernetes_users }}"
+
+- name: create .kube directories in user's home
+  file:
+    path: "{{ item.home }}/.kube"
+    state: directory
+    owner: "{{ item.user }}"
+    group: "{{ item.group }}"
+    mode: 0755
+  with_items: "{{ kubernetes_users }}"
+
+- name: setup the kubeconfig
+  copy:
+    remote_src: True
+    src: /etc/kubernetes/admin.conf
+    dest: "{{ item.home }}/.kube/config"
+    owner: "{{ item.user }}"
+    group: "{{ item.group }}"
+    mode: 0600
+  with_items: "{{ kubernetes_users }}"
+
+- name: configure bash completion
+  lineinfile:
+    path: "{{ item.home }}/.bashrc"
+    line: "source <(kubectl completion bash)"
+  with_items: "{{ kubernetes_users }}"
