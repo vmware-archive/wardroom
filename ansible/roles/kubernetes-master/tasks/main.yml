@@ -10,6 +10,14 @@
     dest: /etc/kubernetes/kubeadm.conf
   when: kubeadm_apiserver_manifest.stat.exists == False
 
+- name: open api server port
+  firewalld:
+    port: 6443/tcp
+    permanent: yes
+    state: enabled
+    immediate: True
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
 - name: run kubeadm init on primary master
   shell: "/usr/bin/kubeadm init --config=/etc/kubernetes/kubeadm.conf --skip-preflight-checks"
   delegate_to: "{{ groups['primary_master']|first }}"

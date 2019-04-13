@@ -31,6 +31,17 @@
     dest: /var/lib/etcd
     state: directory
 
+- name: open etcd ports
+  firewalld:
+    port: "{{ item }}"
+    permanent: yes
+    state: enabled
+    immediate: True
+  with_items:
+  - "2379/tcp"
+  - "2380/tcp"
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
 - name: etcd systemd template
   template:
     src: etc/systemd/system/etcd.service

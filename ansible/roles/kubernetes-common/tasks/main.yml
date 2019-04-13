@@ -37,3 +37,14 @@
   notify:
     - restart kubelet
   when: kubernetes_common_primary_interface is defined or kubernetes_common_kubelet_extra_args is defined
+
+- name: open kubelet ports
+  firewalld:
+    port: "{{ item }}"
+    permanent: yes
+    state: enabled
+    immediate: True
+  with_items:
+  - "30000-32767/tcp"
+  - "10250-10255/tcp"
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'

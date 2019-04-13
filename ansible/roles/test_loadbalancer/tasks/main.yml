@@ -20,6 +20,14 @@
   pip:
     name: docker-py
 
+- name: open api server port
+  firewalld:
+    port: 6443/tcp
+    permanent: yes
+    state: enabled
+    immediate: True
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
 - name: run nginx docker container
   become: yes
   docker_container:
