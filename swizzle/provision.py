@@ -23,6 +23,10 @@ import subprocess
 import tempfile
 import yaml
 
+WARDROOM_BOXES = {
+    'xenial': 'generic/ubuntu1804',
+    'centos7': 'generic/centos7',
+}
 
 def vagrant_status():
     """ Run `vagrant status` and parse the current vm state """
@@ -147,8 +151,12 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-a', '--action', default='install',
                         choices=['install'])
+    parser.add_argument('-o', '--os', default='xenial',
+                        choices=WARDROOM_BOXES.keys())
     parser.add_argument('config')
     args, extra_args = parser.parse_known_args()
+
+    os.environ["WARDROOM_BOX"] = WARDROOM_BOXES[args.os]
 
     node_state = vagrant_status()
 

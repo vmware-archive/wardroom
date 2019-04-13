@@ -7,12 +7,16 @@
 # you're doing.
 WARDROOM_MASTER_COUNT = ENV["WARDROOM_MASTER_COUNT"] || 3
 WARDROOM_NODE_COUNT = ENV["WARDROOM_NODE_COUNT"] || 1
-WARDROOM_BOX_NAME = ENV["WARDROOM_BOX_NAME"] || "generic/ubuntu1804"
+WARDROOM_BOX = ENV["WARDROOM_BOX"] || "generic/ubuntu1804"
 WARDROOM_NETWORK_NAME = ENV["WARDROOM_NETWORK_NAME"] || "wardroom-private"
 
 Vagrant.configure("2") do |config|
 
-  config.vm.box = WARDROOM_BOX_NAME
+  config.vm.box = WARDROOM_BOX
+
+  config.vm.provider :libvirt do |libvirt|
+    libvirt.disk_bus = "virtio"
+  end
 
   config.vm.define "loadbalancer" do |subconfig|
     subconfig.vm.hostname = "loadbalancer"
