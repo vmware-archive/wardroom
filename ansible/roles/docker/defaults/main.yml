@@ -1,5 +1,5 @@
 ---
 docker_enable: True
 docker_debian_version: '5:18.09.1~3-0~ubuntu-bionic'
-docker_redhat_version: '17.03.2.ce'
+docker_redhat_version: '18.09.4-3.el7'
 docker_logging_max_size: 100m

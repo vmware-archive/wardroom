@@ -1,7 +1,7 @@
 ---
 - name: add docker dependencies
   yum:
-    name: 
+    name:
       - device-mapper-persistent-data
       - lvm2
 
@@ -12,18 +12,12 @@
     baseurl: https://download.docker.com/linux/centos/7/$basearch/stable/
     gpgkey: https://download.docker.com/linux/centos/gpg
     gpgcheck: true
+    state: present
 
-# This task is here to help w/ idempotence for next task
-# Can be removed if/when the playbook moves back to using yum module
-- name: determine if docker binary is present (implies Docker is installed)
-  stat:
-    path: /usr/bin/docker
-  register: docker_present
-
-# Using this approach because of https://github.com/moby/moby/issues/33930
-- name: install Docker CE if docker binary is not present
-  command: "yum install -y --setopt=obsoletes=0 docker-ce-selinux-{{docker_redhat_version}} docker-ce-{{docker_redhat_version}}"
-  when: docker_present.stat.exists == False
+- name: install Docker binaries
+  yum:
+    name:
+    - docker-ce-{{docker_redhat_version}}
 
 - name: start docker service
   service:
