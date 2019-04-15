@@ -18,6 +18,7 @@
 import argparse
 import jinja2
 import os
+import pprint
 import re
 import subprocess
 import tempfile
@@ -63,15 +64,23 @@ def run_ansible(playbook, inventory_file, extra_args=[]):
     ssh_tempfile = tempfile.mkstemp()
     vagrant_ssh_config(ssh_tempfile[1])
 
-    ansible_env = os.environ.copy()
+    run_env = os.environ.copy()
+    ansible_env = {}
     ansible_env['ANSIBLE_CONFIG'] = "ansible.cfg"
     ansible_env['ANSIBLE_SSH_ARGS'] = os.getenv('ANSIBLE_SSH_ARGS', '')
     ansible_env['ANSIBLE_SSH_ARGS'] += " -F %s" % (ssh_tempfile[1])
-    subprocess.call([
+    run_env.update(ansible_env)
+
+    cmd = [
         "ansible-playbook",
         "-i",
         inventory_file,
-        playbook] + extra_args, env=ansible_env)
+        playbook,
+    ]
+    cmd += extra_args
+    print "Wardroom ansible environment:\n %s\n" % pprint.pformat(ansible_env)
+    print "Wardroom ansbile command:\n %s\n" % " ".join(cmd)
+    subprocess.call(cmd, env=run_env)
 
 
 def get_vagrant_provider():
@@ -147,6 +156,19 @@ def generate_inventory(config, node_state={}):
     return temp_file
 
 
+def state_purpose():
+
+    print "############################################################"
+    print " provision.py is a tool to help test wardroom playbooks     "
+    print " against Vagrant provisioned infrastructure. It is simply   "
+    print " a wrapper around Vagrant and ansible. All of the Ansible   "
+    print " playbooks may be run against any ssh-enabled hosts.        "
+    print " provision.py in intended for refereence purposes.          "
+    print "############################################################"
+    print
+    print
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-a', '--action', default='install',
@@ -157,6 +179,7 @@ def main():
     args, extra_args = parser.parse_known_args()
 
     os.environ["WARDROOM_BOX"] = WARDROOM_BOXES[args.os]
+    state_purpose()
 
     node_state = vagrant_status()
 
