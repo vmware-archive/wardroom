@@ -16,3 +16,5 @@
   with_items:
   - "{{ kubernetes_cni_canal_rbac_manifest_url }}"
   - /tmp/canal.yml
+  environment:
+    KUBECONFIG: "/etc/kubernetes/admin.conf"

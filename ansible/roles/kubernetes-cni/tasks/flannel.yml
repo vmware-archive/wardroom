@@ -13,3 +13,5 @@
   delegate_to: "{{ groups['primary_master']|first }}"
   retries: 10
   delay: 5
+  environment:
+    KUBECONFIG: "/etc/kubernetes/admin.conf"
