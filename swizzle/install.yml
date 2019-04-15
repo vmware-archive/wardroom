@@ -5,7 +5,8 @@
     - prereqs
     - ansible-prereqs
 
-- tasks:
+- hosts: all
+  tasks:
   - set_fact:
       wardroom_action: 'install'
 
@@ -34,11 +35,9 @@
     - role: docker
       when: docker_enable|bool
     - kubernetes
-    - kubernetes-common
   tags:
     - prereqs
     - kubernetes-prereqs
-    - kubernetes-common
 
 - name: install etcd
   hosts: etcd
@@ -70,7 +69,9 @@
   hosts: nodes
   become: yes
   roles:
-    - kubernetes-node
+    - role: etcd
+      when: False
+    - role: kubernetes-node
   tags:
     - kubernetes-node
 

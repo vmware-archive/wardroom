@@ -1,5 +1,6 @@
 ---
-- tasks:
+- hosts: all
+  tasks:
   - set_fact:
       wardroom_action: 'upgrade'
 
@@ -17,5 +18,8 @@
   hosts: nodes
   become: yes
   roles:
-  - kubernetes
+  - role: kubernetes
+  - role: etcd
+    when: False
+  - role: kubernetes-node
   tags: ['upgrade-workers']
