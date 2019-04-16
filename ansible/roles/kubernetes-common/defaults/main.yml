@@ -12,7 +12,7 @@ kubernetes_common_kubelet_config: {}
 kubernetes_common_kubeadm_config:
   apiVersion: kubeadm.k8s.io/v1alpha3
   kind: ClusterConfiguration
-  kubernetesVersion: 1.12.7
+  kubernetesVersion: 1.13.5
   controlPlaneEndpoint: "{{ kubernetes_common_api_fqdn }}"
   apiServerExtraArgs:
     "endpoint-reconciler-type": "lease"

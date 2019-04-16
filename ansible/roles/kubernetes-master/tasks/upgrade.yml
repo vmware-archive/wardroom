@@ -1,6 +1,6 @@
 ---
 - name: add new control plane manifests
-  command: "kubeadm alpha phase controlplane all --config /etc/kubernetes/kubeadm.conf"
+  command: "kubeadm init phase control-plane all --config /etc/kubernetes/kubeadm.conf"
   retries: 5
   delay: 3
 
@@ -18,7 +18,7 @@
   delegate_to: "{{ groups['primary_master']|first }}"
 
 - name: add all of the kubernetes add-ons
-  command: "kubeadm alpha phase addon all --config /etc/kubernetes/kubeadm.conf"
+  command: "kubeadm init phase addon all --config /etc/kubernetes/kubeadm.conf"
   retries: 5
   delay: 3
 

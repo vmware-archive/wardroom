@@ -54,14 +54,6 @@
     src: etc/kubernetes/kubeadm.conf
     dest: /etc/kubernetes/kubeadm.conf
 
-- name: generate kubelet configuration
-  command: "kubeadm alpha phase kubelet --config /etc/kubernetes/kubeadm.conf config write-to-disk"
-  retries: 5
-  delay: 3
-  notify:
-  - restart kubelet
-  when: not kubernetes_common_kubelet_config
-
 - name: write kubelet configuration
   template:
     dest: /var/lib/kubelet/config.yaml
