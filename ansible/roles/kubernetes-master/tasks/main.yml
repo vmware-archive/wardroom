@@ -1,4 +1,10 @@
 ---
+- fail:
+    msg:
+    - "kubernetes_master_kubeadm_config has been moved. It is now located at kubernetes_common_kubeadm_config."
+    - "Please update your inventories"
+  when: kubernetes_master_kubeadm_config is defined
+
 - include_tasks: install.yml
   when: wardroom_action == 'install'
 
