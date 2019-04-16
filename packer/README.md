@@ -169,6 +169,8 @@ and run the tests inside that cluster.
 Connect remotely to an instance created from the image and run the Node Conformance tests using the following commands:
 
 ```sh
+
+# Cluster Creation (skip this if you create a single node cluster in some other way)
 sudo kubeadm init --pod-network-cidr=192.168.0.0/16
 sudo chown $(id -u):$(id -g) /etc/kubernetes/admin.conf
 export KUBECONFIG=/etc/kubernetes/admin.conf
@@ -178,6 +180,7 @@ kubectl create -f https://docs.projectcalico.org/v3.3/getting-started/kubernetes
 kubectl create -f https://docs.projectcalico.org/v3.3/getting-started/kubernetes/installation/hosted/rbac-kdd.yaml
 
 
+# Setup for Conformance tests
 # Remove all the taints from the node -- simply adding tolerations to the conformance deployment didn't work
 kubectl patch nodes $(hostname) -p '{"spec":{"taints":[]}}'
 
