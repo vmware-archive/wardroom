@@ -164,7 +164,7 @@ packer build -var-file oci-us-phoenix-1.json -var build_version=`git rev-parse H
 ## Testing Built Images
 
 After your images are created, you'll want to prove that the images can be used to build conformant clusters. The conformance testing suite tests clusters, not single nodes -- so we have to spin up a single node cluster
-and run the tests inside that cluster.
+and run the tests inside the new cluster.
 
 Connect remotely to an instance created from the image and run the Node Conformance tests using the following commands:
 
