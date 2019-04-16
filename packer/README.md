@@ -161,7 +161,7 @@ To build an OCI image:
 packer build -var-file oci-us-phoenix-1.json -var build_version=`git rev-parse HEAD` -var oci_availability_domain="<name of availability domain>" -var oci_compartment_ocid="<OCID of compartment>" -var oci_subnet_ocid="<OCID of subnet in specified availability domain>" -only=oci-ubuntu packer.json
 ```
 
-## Testing Images
+## Testing Built Images
 
 After your images are created, you'll want to prove that the images can be used to build conformant clusters. The conformance testing suite tests clusters, not single nodes -- so we have to spin up a single node cluster
 and run the tests inside that cluster.
