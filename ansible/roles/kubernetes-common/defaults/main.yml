@@ -7,3 +7,16 @@ kubernetes_common_primary_interface: eth0
 
 # kubelet_extra_args is a dict of arg:value (ie. 'node-ip: 1.1.1.1' for '--node-ip=1.1.1.1')
 kubernetes_common_kubelet_extra_args: {}
+kubernetes_common_kubelet_config: {}
+
+kubernetes_common_kubeadm_config:
+  apiVersion: kubeadm.k8s.io/v1alpha1
+  kind: MasterConfiguration
+  kubernetesVersion: 1.11.9
+  api:
+    controlPlaneEndpoint: "{{ kubernetes_common_api_fqdn }}"
+  apiServerExtraArgs:
+    "endpoint-reconciler-type": "lease"
+  apiServerCertSANs: "{{ kubernetes_common_api_ip | kube_lookup_hostname(kubernetes_common_api_fqdn, True) }}"
+  etcd:
+    endpoints: "{{ etcd_client_endpoints }}"

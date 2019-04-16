@@ -19,7 +19,7 @@ all:
       modifications:
       - expression: "spec.template.spec.containers[?(@.name == 'calico-node')].env[?(@.name == 'CALICO_IPV4POOL_CIDR')].value"
         value: "172.16.0.0/16"
-    kubernetes_master_kubeadm_config:
+    kubernetes_common_kubeadm_config:
       apiServerCertSANs:
       - "{{ loadbalancer_ip }}"
       networking:
