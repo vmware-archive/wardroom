@@ -5,6 +5,19 @@
     - "Please update your inventories"
   when: kubernetes_master_kubeadm_config is defined
 
+- name: determine whether kubeadm needs to be run
+  stat:
+    path: /etc/kubernetes/manifests/kube-apiserver.yaml
+  register: kubeadm_apiserver_manifest
+
+- name: open api server port
+  firewalld:
+    port: 6443/tcp
+    permanent: yes
+    state: enabled
+    immediate: True
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
 - include_tasks: install.yml
   when: wardroom_action == 'install'
 
