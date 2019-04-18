@@ -1,6 +1,22 @@
 ---
+- name: comment out any swap in fstab
+  lineinfile:
+    path: '/etc/fstab'
+    regexp: '^(.*\s+none\s+swap.*)'
+    line: '# removed by wardroom \1'
+    backrefs: yes
+  when: kubernetes_common_disable_swap|bool == True
+
 - name: disable swap
   command: swapoff -a
+  when: kubernetes_common_disable_swap|bool == True
+
+- name: update /etc/hosts to include cluster fqdn
+  lineinfile:
+    dest: /etc/hosts
+    line: "{{ kubernetes_common_api_ip }} {{ kubernetes_common_api_fqdn }}"
+    state: present
+  when: kubernetes_common_manage_etc_hosts and kubernetes_common_api_ip is defined and kubernetes_common_api_fqdn is defined
 
 - set_fact:
     kubernetes_node_ip: "{{ hostvars[inventory_hostname]['ansible_'~item]['ipv4']['address'] }}"
@@ -15,8 +31,33 @@
 
 - name: drop extra args kubelet config
   template:
+    backup: True
     dest: /etc/systemd/system/kubelet.service.d/09-extra-args.conf
     src: etc/systemd/system/kubelet.service.d/09-extra-args.conf
   notify:
     - restart kubelet
   when: kubernetes_common_primary_interface is defined or kubernetes_common_kubelet_extra_args is defined
+
+- name: open kubelet ports
+  firewalld:
+    port: "{{ item }}"
+    permanent: yes
+    state: enabled
+    immediate: True
+  with_items:
+  - "30000-32767/tcp"
+  - "10250-10255/tcp"
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: drop kubeadm template
+  template:
+    src: etc/kubernetes/kubeadm.conf
+    dest: /etc/kubernetes/kubeadm.conf
+
+- name: write kubelet configuration
+  template:
+    dest: /var/lib/kubelet/config.yaml
+    src: var/lib/kubelet/config.yaml
+  when: kubernetes_common_kubelet_config
+
+- meta: flush_handlers

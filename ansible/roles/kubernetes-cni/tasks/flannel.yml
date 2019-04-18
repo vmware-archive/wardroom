@@ -8,8 +8,10 @@
     reload: yes
 
 - name: install CNI networking
-  command: "/usr/bin/kubectl apply -f {{ kubernetes_cni.flannel.manifest_url }}"
+  command: "/usr/bin/kubectl apply -f {{ kubernetes_cni_flannel_manifest_url }}"
   run_once: True
   delegate_to: "{{ groups['primary_master']|first }}"
   retries: 10
   delay: 5
+  environment:
+    KUBECONFIG: "/etc/kubernetes/admin.conf"

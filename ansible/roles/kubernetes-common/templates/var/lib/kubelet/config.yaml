@@ -1,0 +1,2 @@
+---
+{{ kubernetes_common_kubelet_config|to_nice_yaml(indent=2) }}

@@ -3,18 +3,31 @@
   apt_key:
     url: "{{ kubernetes_apt_key_url }}"
     state: present
+  register: apt_key_result
+  until: apt_key_result is success
+  retries: 5
+  delay: 5
 
 - name: add the kubernetes apt repo
   apt_repository:
     repo: "{{ kubernetes_apt_repo_string }}"
     update_cache: True
     state: present
+  register: apt_respository_result
+  until: apt_respository_result is success
+  retries: 5
+  delay: 5
 
 - name: install kubernetes packages
   apt:
-    name: "{{ item }}"
-  with_items:
-    - "kubelet={{ kubernetes_version | kube_platform_version('debian') }}"
-    - "kubeadm={{ kubernetes_version | kube_platform_version('debian') }}"
-    - "kubectl={{ kubernetes_version | kube_platform_version('debian') }}"
-    - "kubernetes-cni={{kubernetes_cni_version | kube_platform_version('debian') }}"
+    update_cache: True
+    cache_valid_time: 60
+    name:
+      - "kubelet={{ kubernetes_version | kube_platform_version('debian') }}"
+      - "kubeadm={{ kubernetes_version | kube_platform_version('debian') }}"
+      - "kubectl={{ kubernetes_version | kube_platform_version('debian') }}"
+      - "kubernetes-cni={{kubernetes_cni_version | kube_platform_version('debian') }}"
+  register: apt_result
+  until: apt_result is success
+  retries: 5
+  delay: 5

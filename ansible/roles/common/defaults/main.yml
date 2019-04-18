@@ -1,9 +1,10 @@
 ---
-common_upgrade_base: "{{ common.upgrade_base if common_upgrade_base_defined else False }}"
+common_enable: True
+common_upgrade_base: False
 common_rpms:
 - yum-utils
 - python2-pip
-- python-requests
+- python2-requests
 - ebtables
 - socat
 - ntp

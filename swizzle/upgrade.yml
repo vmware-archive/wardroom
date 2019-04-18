@@ -1,0 +1,25 @@
+---
+- hosts: all
+  tasks:
+  - set_fact:
+      wardroom_action: 'upgrade'
+
+- name: update control plane
+  hosts: masters
+  become: yes
+  roles:
+  - role: kubernetes
+  - role: etcd
+    when: False
+  - role: kubernetes-master
+  tags: ['upgrade-control-plane']
+
+- name: update the workers
+  hosts: nodes
+  become: yes
+  roles:
+  - role: kubernetes
+  - role: etcd
+    when: False
+  - role: kubernetes-node
+  tags: ['upgrade-workers']

@@ -17,6 +17,8 @@
   notify:
     - restart docker
 
+- meta: flush_handlers
+
 - name: create a service.d directory for config
   file:
     dest: /etc/systemd/system/docker.service.d

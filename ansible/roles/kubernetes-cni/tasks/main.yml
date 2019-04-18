@@ -1,6 +1,14 @@
 ---
+- pip:
+    name:
+    - pyyaml
+    - jsonpath-ng
+
 - include_tasks: calico.yml
-  when: kubernetes_cni.plugin == "calico"
+  when: kubernetes_cni_plugin == "calico"
 
 - include_tasks: flannel.yml
-  when: kubernetes_cni.plugin == "flannel"
+  when: kubernetes_cni_plugin == "flannel"
+
+- include_tasks: canal.yml
+  when: kubernetes_cni_plugin == "canal"

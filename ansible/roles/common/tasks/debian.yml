@@ -11,12 +11,10 @@
 
 - name: install baseline dependencies
   apt:
-    name: "{{ item }}"
+    name: "{{ common_debs }}"
     state: latest
-  with_items: "{{ common_debs }}"
 
 - name: install extra debs
   apt:
-    name: "{{ item }}"
+    name: "{{ common_extra_debs }}"
     state: latest
-  with_items: "{{ common_extra_debs }}"

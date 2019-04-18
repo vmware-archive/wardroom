@@ -1,4 +1,5 @@
 ---
+etcd_enable: True
 etcd_cluster_token: 444fddcc-beae-45bc-9da6-d941d446b595
-etcd_interface: enp0s8
+etcd_interface: eth0
 etcd_version: v3.2.10

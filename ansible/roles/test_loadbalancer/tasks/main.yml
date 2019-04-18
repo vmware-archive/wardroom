@@ -1,0 +1,39 @@
+---
+- debug:
+    msg:
+      - "################### Test Load Balancer Enaabled ####################"
+      - "You have enabled the loadbalancer role that is only intended for"
+      - "testing purposes, and should not be used in a produciton setting."
+      - "####################################################################"
+
+- name: create /etc/nginx directory
+  file:
+    dest: /etc/nginx
+    state: directory
+
+- name: drop the nginx.conf template
+  template:
+    src: etc/nginx/nginx.conf
+    dest: /etc/nginx/nginx.conf
+
+- name: install docker-py
+  pip:
+    name: docker-py
+
+- name: open api server port
+  firewalld:
+    port: 6443/tcp
+    permanent: yes
+    state: enabled
+    immediate: True
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: run nginx docker container
+  become: yes
+  docker_container:
+    name: kubernetes-nginx-proxy
+    image: nginx
+    restart_policy: always
+    volumes:
+      - "/etc/nginx:/etc/nginx"
+    network_mode: host

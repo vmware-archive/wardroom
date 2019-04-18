@@ -1,5 +1,5 @@
 {
-  "exec-opts": ["native.cgroupdriver=systemd"],
+  "exec-opts": ["native.cgroupdriver={{ 'systemd' if ansible_os_family|lower == 'redhat' else 'cgroupfs'|safe }}"],
   "log-driver": "json-file",
   "log-opts": {
     "max-size": "{{ docker_logging_max_size }}"
