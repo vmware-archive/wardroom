@@ -10,6 +10,13 @@ WARDROOM_NODE_COUNT = ENV["WARDROOM_NODE_COUNT"] || 1
 WARDROOM_BOX = ENV["WARDROOM_BOX"] || "generic/ubuntu1804"
 WARDROOM_NETWORK_NAME = ENV["WARDROOM_NETWORK_NAME"] || "wardroom-private"
 
+$update_dns = <<-SCRIPT
+  if grep -qi debian /etc/os-release; then
+    sudo sed -i "s/\\[4.2.2.*/\\[8.8.8.8, 8.8.4.4\\]/g" /etc/netplan/01-netcfg.yaml;
+    sudo netplan apply;
+  fi;
+SCRIPT
+
 Vagrant.configure("2") do |config|
 
   config.vm.box = WARDROOM_BOX
@@ -17,6 +24,8 @@ Vagrant.configure("2") do |config|
   config.vm.provider :libvirt do |libvirt|
     libvirt.disk_bus = "virtio"
   end
+
+  config.vm.provision "shell", inline: $update_dns
 
   config.vm.define "loadbalancer" do |subconfig|
     subconfig.vm.hostname = "loadbalancer"
