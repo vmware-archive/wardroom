@@ -163,13 +163,45 @@ packer build -var-file oci-us-phoenix-1.json -var build_version=`git rev-parse H
 
 ## Testing Images
 
+After your images are created, you'll want to prove that the images can be used to build conformant clusters. The conformance testing suite tests _clusters_, not single nodes -- so we have to spin up a single node cluster
+and run the tests inside the new cluster.
+
 Connect remotely to an instance created from the image and run the Node Conformance tests using the following commands:
 
 ```sh
-wget https://dl.k8s.io/$(< /etc/kubernetes_community_ami_version)/kubernetes-test.tar.gz
-tar -zxvf kubernetes-test.tar.gz kubernetes/platforms/linux/amd64
-cd kubernetes/platforms/linux/amd64
-sudo ./ginkgo --nodes=8 --flakeAttempts=2 --focus="\[Conformance\]" --skip="\[Flaky\]|\[Serial\]|\[sig-network\]|Container Lifecycle Hook" ./e2e_node.test -- --k8s-bin-dir=/usr/bin
+
+# Cluster Creation (skip this if you create a single node cluster in some other way)
+sudo kubeadm init --pod-network-cidr=192.168.0.0/16
+sudo chown $(id -u):$(id -g) /etc/kubernetes/admin.conf
+export KUBECONFIG=/etc/kubernetes/admin.conf
+
+
+kubectl create -f https://docs.projectcalico.org/v3.3/getting-started/kubernetes/installation/hosted/kubernetes-datastore/calico-networking/1.7/calico.yaml
+kubectl create -f https://docs.projectcalico.org/v3.3/getting-started/kubernetes/installation/hosted/rbac-kdd.yaml
+
+
+# Setup for Conformance tests
+# Remove all the taints from the node -- simply adding tolerations to the conformance deployment didn't work
+kubectl patch nodes $(hostname) -p '{"spec":{"taints":[]}}'
+
+# Get the yaml to run the conformance tests, and replace the source image repo to use the 
+# globally accessible image repo, instead of the Kubernetes internal one.
+# This yaml was created along with the 1.14 release, but can be used with 1.13, and 
+# it will up updated with future releases. (Again, this only works >=1.13)
+wget https://raw.githubusercontent.com/kubernetes/kubernetes/master/cluster/images/conformance/conformance-e2e.yaml
+sed -i 's/k8s.gcr.io/gcr.io\/google-containers/' conformance-e2e.yaml
+
+# Will also need to go in and update the version number of the image to add the trailing "patch version" part
+# The pulled yaml will only have major.minor.
+# So, for example, with v1.14, you'll need to update the image to 1.14.0
+# The valid conformance test images can be found here:
+# gcr.io/google-containers/conformance-amd64
+
+# Add to "value" for E2E_SKIP env var
+\\[Flaky\\]|\\[Serial\\]|\\[sig-network\\]|Container Lifecycle Hook
+
+# Finally, run the tests -- and leave it alone for about an hour.
+kubectl create -f conformance-e2e.yaml
 ```
 
 ## Deploying Images
