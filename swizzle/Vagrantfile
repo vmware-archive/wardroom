@@ -35,7 +35,7 @@ Vagrant.configure("2") do |config|
     end
   end
 
-  (1..WARDROOM_MASTER_COUNT).each do |i|
+  (1..WARDROOM_MASTER_COUNT.to_i).each do |i|
 
     config.vm.define "master#{i}" do |subconfig|
       subconfig.vm.hostname = "master#{i}.local"
@@ -48,7 +48,7 @@ Vagrant.configure("2") do |config|
     end
   end
 
-  (1..WARDROOM_NODE_COUNT).each do |i|
+  (1..WARDROOM_NODE_COUNT.to_i).each do |i|
     config.vm.define "node#{i}" do |subconfig|
       subconfig.vm.hostname = "node#{i}.local"
 
