@@ -1,4 +1,12 @@
 ---
+- name: set ipv4 routing
+  sysctl:
+    name: net.bridge.bridge-nf-call-iptables
+    value: 1
+    sysctl_set: yes
+    state: present
+    reload: yes
+
 - import_tasks: debian.yml
   when: ansible_os_family == "Debian"
 
