@@ -1,4 +1,18 @@
 ---
+- name: ensure firewalld is installed
+  yum:
+    name: firewalld
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: ensure firewalld is running
+  systemd:
+    name: firewalld
+    daemon_reload: True
+    enabled: yes
+    state: started
+  when: ansible_os_family == "RedHat"
+
 - name: download and extract etcd binaries
   unarchive:
     remote_src: True

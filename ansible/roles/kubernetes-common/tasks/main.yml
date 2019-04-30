@@ -38,6 +38,12 @@
     - restart kubelet
   when: kubernetes_common_primary_interface is defined or kubernetes_common_kubelet_extra_args is defined
 
+- name: ensure firewalld is running
+  systemd:
+    name: firewalld
+    state: started
+  when: ansible_os_family == "RedHat"
+
 - name: open kubelet ports
   firewalld:
     port: "{{ item }}"
