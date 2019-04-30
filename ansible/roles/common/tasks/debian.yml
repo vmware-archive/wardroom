@@ -18,3 +18,8 @@
   apt:
     name: "{{ common_extra_debs }}"
     state: latest
+
+- name: install specific version of urllib3
+  pip: 
+    name: urllib3==1.23
+  when: ansible_distribution_version == "16.04"
