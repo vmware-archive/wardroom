@@ -1,0 +1,30 @@
+---
+- name: install ansible prerequisutess
+  import_playbook: ../ansible/pre.yml
+  tags:
+    - prereqs
+    - ansible-prereqs
+
+- name: create a kubeadm token
+  hosts: primary_master
+  tasks:
+    - name: generate a kubeadm token
+      command: "/usr/bin/kubeadm token create --config /etc/kubernetes/kubeadm.conf --kubeconfig /etc/kubernetes/admin.conf"
+      register: generated_token
+      run_once: True
+      delegate_to: "{{ groups['primary_master']|first }}"
+
+- name: install kubernetes prerequisites
+  hosts: nodes
+  become: yes
+  roles:
+    - role: common
+      when: common_enable|bool
+    - role: docker
+      when: docker_enable|bool
+    - role: kubernetes
+    - role: etcd
+      when: False
+    - role: kubernetes-node
+  tags:
+    - kubernetes-node
