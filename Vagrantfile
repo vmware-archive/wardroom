@@ -15,6 +15,13 @@ Vagrant.configure("2") do |config|
     end
   end
 
+  config.vm.define "bionic" do |conf|
+    conf.vm.box = "generic/ubuntu1804"
+    conf.vm.provider "virtualbox" do |v|
+      v.customize ["modifyvm", :id, "--uartmode1", "disconnected"]
+    end
+  end
+
   config.vm.define "centos7" do |conf|
     conf.vm.box = "centos/7"
   end
