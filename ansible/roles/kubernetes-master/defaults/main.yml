@@ -1,1 +1,3 @@
 ---
+# This variable can be used to provide a custom list of audit policy rules.
+kubernetes_common_audit_policy_rules: []
