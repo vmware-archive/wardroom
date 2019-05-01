@@ -29,3 +29,10 @@
     sysctl_set: yes
     state: present
     reload: yes
+
+- name: ensure firewalld is running
+  systemd:
+    name: firewalld
+    daemon_reload: True
+    enabled: yes
+    state: started

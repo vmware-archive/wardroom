@@ -43,7 +43,10 @@
   hosts: etcd
   become: yes
   roles:
-    - etcd
+    - role: common
+      when: common_enable|bool
+    - role: etcd
+    
   tags:
     - etcd
 
