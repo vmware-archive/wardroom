@@ -18,7 +18,8 @@
     state: present
   when: kubernetes_common_manage_etc_hosts and kubernetes_common_api_ip is defined and kubernetes_common_api_fqdn is defined
 
-- set_fact:
+- name: set kubernetes_node_ip fact
+  set_fact:
     kubernetes_node_ip: "{{ hostvars[inventory_hostname]['ansible_'~item]['ipv4']['address'] }}"
   with_items:
     - "{{ kubernetes_common_primary_interface }}"
@@ -68,4 +69,5 @@
     src: var/lib/kubelet/config.yaml
   when: kubernetes_common_kubelet_config
 
-- meta: flush_handlers
+- name: flush handlers
+  meta: flush_handlers
