@@ -1,8 +1,9 @@
 ---
-- fail:
-    msg:
-    - "kubernetes_master_kubeadm_config has been moved. It is now located at kubernetes_common_kubeadm_config."
-    - "Please update your inventories"
+- name: kubernetes_master_kubeadm_config parameter obsoleted
+  fail:
+    msg: |
+      kubernetes_master_kubeadm_config has been moved. It is now located at kubernetes_common_kubeadm_config."
+      Please update your inventories
   when: kubernetes_master_kubeadm_config is defined
 
 - name: determine whether kubeadm needs to be run
