@@ -11,11 +11,17 @@
     state: started
     enabled: true
 
+# Required by the docker_image ansible module
+- name: install docker-py
+  pip:
+    name: docker-py
+  when: kubernetes_enable_cached_images|bool and kubernetes_cached_images|len > 0
+
 - name: cache docker images for kubeadm
   docker_image:
     name: "{{ item }}"
   with_items: kubernetes_cached_images
-  when: kubernetes_enable_cached_images | bool
+  when: kubernetes_enable_cached_images|bool and kubernetes_cached_images|len > 0
 
 - name: set kubernetes version file
   template:
