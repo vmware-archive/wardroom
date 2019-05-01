@@ -6,7 +6,8 @@
   when: kubeadm_apiserver_manifest.stat.exists == False
 
 - name: slurp the ca certificate and key
-  slurp: src=/etc/kubernetes/{{ item }}
+  slurp:
+    src: "/etc/kubernetes/{{ item }}"
   with_items:
     - pki/apiserver.crt
     - pki/apiserver.key
