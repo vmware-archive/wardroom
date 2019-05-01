@@ -36,7 +36,7 @@
     src: etc/default/kubelet
   notify:
     - restart kubelet
-  when: kubernetes_common_primary_interface is defined or kubernetes_common_kubelet_extra_args is defined
+  when: kubernetes_common_primary_interface is defined or kubernetes_common_kubelet_extra_args is defined or kubernetes_common_kubelet_env_vars is defined
 
 - name: delete old kubelet extra args unit file
   file:
