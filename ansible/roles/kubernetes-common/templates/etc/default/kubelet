@@ -1,0 +1,5 @@
+KUBELET_EXTRA_ARGS={% if kubernetes_common_primary_interface is defined %} --node-ip={{kubernetes_node_ip}}{% endif %}{% for k, v in kubernetes_common_kubelet_extra_args.items() %} --{{k}}='{{v}}'{%- endfor %}
+
+{% for k, v in kubernetes_common_kubelet_env_vars.items() %}
+{{k}}='{{v}}'
+{% endfor %}
