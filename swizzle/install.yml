@@ -34,7 +34,7 @@
       when: common_enable|bool
     - role: docker
       when: docker_enable|bool
-    - kubernetes
+    - role: kubernetes
   tags:
     - prereqs
     - kubernetes-prereqs
@@ -45,8 +45,10 @@
   roles:
     - role: common
       when: common_enable|bool
+    - role: docker
+      when: docker_enable|bool
+    - role: kubernetes
     - role: etcd
-    
   tags:
     - etcd
 

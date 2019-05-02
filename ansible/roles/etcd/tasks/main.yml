@@ -1,57 +1,67 @@
 ---
-- name: download and extract etcd binaries
-  unarchive:
-    remote_src: True
-    src: "{{ etcd_release_url }}"
-    dest: /tmp
-    creates: /usr/local/bin/etcd
-  register: etcd_downloaded
-
-- name: move binaries into path
-  copy:
-    remote_src: True
-    src: "/tmp/etcd-{{ etcd_version }}-linux-amd64/{{ item }}"
-    dest: "/usr/local/bin/{{ item }}"
-  with_items:
-    - etcd
-    - etcdctl
-  when: etcd_downloaded is changed
-
-- name: set permissions on etcd binaries
-  file:
-    dest: "/usr/local/bin/{{ item }}"
-    mode: 0755
-    state: file
-  with_items:
-    - etcd
-    - etcdctl
-
-- name: create data directory
-  file:
-    dest: /var/lib/etcd
-    state: directory
-
-- name: open etcd ports
-  firewalld:
-    port: "{{ item }}"
-    permanent: yes
-    state: enabled
-    immediate: True
-  with_items:
-  - "2379/tcp"
-  - "2380/tcp"
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
-
-- name: etcd systemd template
+- name: configure kubelet
   template:
-    src: etc/systemd/system/etcd.service
-    dest: /etc/systemd/system/etcd.service
-  tags:
-    - etcd2
+    src: etc/systemd/system/kubelet.service.d/20-etcd-service-manager.conf
+    dest: /etc/systemd/system/kubelet.service.d/20-etcd-service-manager.conf
 
-- name: enable and start the service
+- name: enable kubelet service
   systemd:
-    name: etcd
-    daemon_reload: True
-    state: started
+    name: kubelet
+    state: restarted # TODO: Only restart the kubelet if the above configuration changed
     enabled: True
+    daemon_reload: True
+
+- name: generate etcd ca certificate
+  command: /usr/bin/kubeadm init phase certs etcd-ca
+  run_once: True
+  delegate_to: "{{ groups['etcd']|first }}"
+  
+- name: slurp the etcd ca certificate and key
+  slurp:
+    src: "/etc/kubernetes/pki/etcd/{{ item }}"
+  run_once: True
+  delegate_to: "{{ groups['etcd']|first }}"
+  register: etcd_ca_pki
+  with_items:
+  - ca.crt
+  - ca.key
+
+- name: ensure etcd pki directory exists
+  file:
+    dest: /etc/kubernetes/pki/etcd
+    state: directory
+    owner: root
+    group: root
+
+- name: distribute etcd ca certificate and key
+  no_log: True
+  copy:
+    dest: "{{ item.source }}"
+    content: "{{ item.content | b64decode }}"
+    owner: root
+    group: root
+    mode: 0700
+  with_items: "{{ etcd_ca_pki.results }}"
+  when: inventory_hostname != groups['etcd']|first
+  
+- name: drop kubeadm configuration file
+  template:
+    src: etc/kubernetes/kubeadm-etcd.yaml
+    dest: /etc/kubernetes/kubeadm-etcd.yaml
+
+- name: generate etcd certificates
+  command: "/usr/bin/kubeadm init phase certs {{ item }} --config /etc/kubernetes/kubeadm-etcd.yaml"
+  with_items:
+  - etcd-server
+  - etcd-peer
+  - etcd-healthcheck-client
+  - apiserver-etcd-client
+
+- name: generate etcd static pod manifest
+  command: "/usr/bin/kubeadm init phase etcd local --config /etc/kubernetes/kubeadm-etcd.yaml"
+
+# This is a hack to support stacked and external etcd.
+- name: delete kubelet systemd drop-in if stacked
+  file:
+    path: /etc/systemd/system/kubelet.service.d/20-etcd-service-manager.conf
+    state: absent
