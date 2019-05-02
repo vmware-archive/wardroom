@@ -48,8 +48,6 @@
     dest: /etc/systemd/system/etcd.service
   tags:
     - etcd2
-  notify:
-    - restart etcd
 
 - name: enable and start the service
   systemd:

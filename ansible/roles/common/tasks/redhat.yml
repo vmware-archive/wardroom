@@ -21,3 +21,10 @@
   modprobe:
     name: br_netfilter
     state: present
+
+- name: ensure firewalld is running
+  systemd:
+    name: firewalld
+    daemon_reload: True
+    enabled: yes
+    state: started
