@@ -12,6 +12,7 @@ all:
 {% endif %}
     kubernetes_common_api_ip: "{{ loadbalancer_ip }}"
     kubernetes_common_api_fqdn: "k8s.example.com"
+    kubernetes_common_manage_etc_hosts: True
     kubernetes_cni_plugin: calico
     kubernetes_cni_calico_manifest_mods:
     - conditions:
