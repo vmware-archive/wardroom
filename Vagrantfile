@@ -9,7 +9,7 @@
 Vagrant.configure("2") do |config|
 
   config.vm.define "xenial" do |conf|
-    conf.vm.box = "ubuntu/xenial64"
+    conf.vm.box = "generic/ubuntu1604"
     conf.vm.provider "virtualbox" do |v|
       v.customize ["modifyvm", :id, "--uartmode1", "disconnected"]
     end

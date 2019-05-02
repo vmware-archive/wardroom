@@ -27,7 +27,7 @@
       when: test_loadbalancer_enable|bool == True
 
 - name: install kubernetes prerequisites
-  hosts: nodes:masters
+  hosts: masters
   become: yes
   roles:
     - role: common
@@ -68,15 +68,7 @@
   tags:
     - kubernetes-cni
 
-- name: create kubernetes nodes
-  hosts: nodes
-  become: yes
-  roles:
-    - role: etcd
-      when: False
-    - role: kubernetes-node
-  tags:
-    - kubernetes-node
+- import_playbook: add-nodes.yml
 
 - name: setup kubernetes users
   hosts: masters

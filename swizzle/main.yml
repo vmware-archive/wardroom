@@ -1,0 +1,12 @@
+---
+- name: add node(s) to the cluster
+  import_playbook: add-nodes.yml
+  when: wardroom_action == 'add-nodes'
+
+- name: run cluster install
+  import_playbook: install.yml
+  when: wardroom_action == 'install'
+
+- name: run cluster upgrade
+  import_playbook: upgrade.yml
+  when: wardroom_action == 'upgrade'

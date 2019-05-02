@@ -1,10 +1,10 @@
 ---
 - debug:
-    msg:
-      - "################### Test Load Balancer Enaabled ####################"
-      - "You have enabled the loadbalancer role that is only intended for"
-      - "testing purposes, and should not be used in a produciton setting."
-      - "####################################################################"
+    msg: |
+      ################### Test Load Balancer Enaabled ####################
+      You have enabled the loadbalancer role that is only intended for
+      testing purposes, and should not be used in a produciton setting.
+      ####################################################################
 
 - name: create /etc/nginx directory
   file:

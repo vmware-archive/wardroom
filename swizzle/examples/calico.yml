@@ -8,6 +8,7 @@ all:
 {% elif vagrant_provider == 'virtualbox' %}
     kubernetes_common_primary_interface: eth1
     etcd_interface: eth1
+    test_loadbalancer_interface: eth1
 {% endif %}
     kubernetes_common_api_ip: "{{ loadbalancer_ip }}"
     kubernetes_common_api_fqdn: "k8s.example.com"

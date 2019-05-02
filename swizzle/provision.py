@@ -57,7 +57,7 @@ def vagrant_ssh_config(tempfile):
         fh.write(output)
 
 
-def run_ansible(playbook, inventory_file, extra_args=[]):
+def run_ansible(action, inventory_file, extra_args=[]):
     """ Run ansible playbook via subprocess.
     We do not want to link ansible as it is GPL """
 
@@ -71,10 +71,13 @@ def run_ansible(playbook, inventory_file, extra_args=[]):
     ansible_env['ANSIBLE_SSH_ARGS'] += " -F %s" % (ssh_tempfile[1])
     run_env.update(ansible_env)
 
+    playbook = "main.yml"
     cmd = [
         "ansible-playbook",
         "-i",
         inventory_file,
+        "-e",
+        "wardroom_action=%s" % action,
         playbook,
     ]
     cmd += extra_args
@@ -172,7 +175,7 @@ def state_purpose():
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-a', '--action', default='install',
-                        choices=['install', "upgrade"])
+                        choices=['install', "upgrade", 'add-nodes'])
     parser.add_argument('-o', '--os', default='xenial',
                         choices=WARDROOM_BOXES.keys())
     parser.add_argument('config')
@@ -195,8 +198,7 @@ def main():
     node_state = vagrant_status()
     inventory_file = generate_inventory(args.config, node_state)
 
-    playbook = "%s.yml" % args.action
-    run_ansible(playbook, inventory_file, extra_args)
+    run_ansible(args.action, inventory_file, extra_args)
 
 
 if __name__ == '__main__':

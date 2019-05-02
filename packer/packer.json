@@ -59,6 +59,7 @@
       "ami_name": "ami-centos-7.4-{{user `kubernetes_version`}}-{{timestamp}}",
       "access_key": "{{user `aws_access_key`}}",
       "secret_key": "{{user `aws_secret_key`}}",
+      "region": "{{user `aws_region`}}",
       "ssh_username": "centos",
       "tags": {
         "build_version": "{{user `build_version`}}",
