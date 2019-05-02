@@ -12,6 +12,7 @@ common_rpms:
 - nfs-utils
 - cloud-utils
 - bind-utils
+- firewalld
 common_extra_rpms: []
 common_debs:
 - openssh-client

@@ -27,7 +27,3 @@
   until: apt_result is success
   retries: 5
   delay: 5
-
-- name: install docker-py
-  pip:
-    name: docker-py

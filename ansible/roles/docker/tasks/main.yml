@@ -23,7 +23,3 @@
   file:
     dest: /etc/systemd/system/docker.service.d
     state: directory
-
-- name: install docker-py
-  pip:
-    name: docker-py
