@@ -1,4 +1,4 @@
-# Building Wardroom Images
+# Building Kubernetes-ready Base Operating System Images
 
 This directory contains tooling for building base images for use as nodes in Kubernetes Clusters. [Packer](https://www.packer.io) is used for building these images.
 
@@ -9,7 +9,7 @@ This directory contains tooling for building base images for use as nodes in Kub
         - [Prerequisites for Google Cloud](#prerequisites-for-google-cloud)
     - [Building Images](#building-images)
         - [Build Variables](#build-variables)
-        - [Limiting Images to Build](#limiting-images-to-build)
+        - [Building Specific Images](#building-specific-images)
         - [Building the AWS AMIs](#building-the-aws-amis)
         - [Building Google Cloud Images](#building-google-cloud-images)
     - [Testing Images](#testing-images)
@@ -58,7 +58,7 @@ packer build -var kubernetes_version=1.8.9-00 -var build_version=1
 
 There are additional variables that may be set that affect the behavior of specific builds or packer post-processors. `packer inspect packer.json` will list all available variables and their default values.
 
-### Limiting Images to Build
+### Building Specific Images
 
 If packer build is run without specifying which images to build, then it will attempt to build all configured images. `packer inspect packer.json` will list the configured builders. The `--only` option can be specified when running `packer build` to limit the images built.
 
@@ -70,7 +70,7 @@ packer build -var build_version=`git rev-parse HEAD` --only=ami-ubuntu packer.js
 
 ### Building the AWS AMIs
 
-Building AWS images requires setting additional variables not set by default. The `aws-us-east-1.json` file is provided as an example.
+Building AWS images requires setting additional variables not set by default. The `packer/aws-us-east-1.json` file is provided as an example.
 
 To build both the Ubuntu and CentOS AWS AMIs:
 
@@ -112,7 +112,7 @@ The [Packer documentation for the Amazon AMI builder](https://www.packer.io/docs
 
 ### Building Google Cloud Images
 
-Building Google Cloud images requires setting the `GOOGLE_APPLICATION_CREDENTIALS` environment variable and providing the IDs of the source images. For the latter, the `gcp-source-images.json` file is provided as an example.
+Building Google Cloud images requires setting the `GOOGLE_APPLICATION_CREDENTIALS` environment variable and providing the IDs of the source images. For the latter, the `packer/gcp-source-images.json` file is provided as an example.
 
 To build only the Ubuntu Google Cloud Image:
 
@@ -158,7 +158,12 @@ You will also need the following pieces of information:
 To build an OCI image:
 
 ```sh
-packer build -var-file oci-us-phoenix-1.json -var build_version=`git rev-parse HEAD` -var oci_availability_domain="<name of availability domain>" -var oci_compartment_ocid="<OCID of compartment>" -var oci_subnet_ocid="<OCID of subnet in specified availability domain>" -only=oci-ubuntu packer.json
+packer build -var-file oci-us-phoenix-1.json \
+    -var build_version=`git rev-parse HEAD` \
+    -var oci_availability_domain="<name of availability domain>" \
+    -var oci_compartment_ocid="<OCID of compartment>" \
+    -var oci_subnet_ocid="<OCID of subnet in specified availability domain>" \
+    -only=oci-ubuntu packer.json
 ```
 
 ## Testing Images
