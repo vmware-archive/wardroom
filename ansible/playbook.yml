@@ -1,4 +1,5 @@
 ---
+# This playbook is used by the packer build to create Kubernetes-ready OS images.
 - import_playbook: pre.yml
 
 - name: build image
