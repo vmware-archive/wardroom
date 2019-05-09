@@ -1,5 +1,5 @@
 ---
-# This is an example of an extra_vars file that can be used with provision.py
+# This is an example of an inventory file that can be used with provision.py
 # It contains jinja variables that are substitued by provision.py
 all:
   vars:

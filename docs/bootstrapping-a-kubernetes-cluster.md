@@ -101,10 +101,11 @@ kubernetes_common_kubeadm_config:
 #### Modifying CNI Manifests
 
 Wardroom provides a mechanism to modify the YAML deployment manfiests of the CNI plugin before
-installing it in the cluster.
+installing it in the cluster. This mechanism is implemented as an ansible library, which allows
+you to express conditions as well as modifications using jsonpath syntax.
 
 The following example shows how to set the `CALICO_IPV4POOL_CIDR` environment variable in the
-Calico deployment manifests. This must be defined in the `extra_vars.yml` file:
+Calico deployment manifests. This must be defined in your inventory or an `extra_vars.yml` file:
 
 ```yaml
 kubernetes_cni_calico_manifest_mods:
@@ -129,7 +130,7 @@ ansible-playbook install.yml --inventory inventory.ini --extra-vars @extra_vars.
 Within the `swizzle` directory, Wardroom provides a Vagrantfile and the `provision.py` script for
 development and testing purposes.
 
-The `provision.py` script generates ansible extra variables from templates in the `examples/` directory.
+The `provision.py` script generates ansible inventories from templates in the `examples/` directory.
 
 To create a cluster using `provision.py`:
 
