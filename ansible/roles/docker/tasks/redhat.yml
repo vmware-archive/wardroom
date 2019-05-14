@@ -1,9 +1,4 @@
 ---
-- name: add docker dependencies
-  yum:
-    name:
-      - device-mapper-persistent-data
-      - lvm2
 
 - name: add docker repo
   yum_repository:
