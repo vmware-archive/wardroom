@@ -2,6 +2,7 @@
 - name: add epel repo
   yum:
     name: "{{ common_redhat_epel_rpm }}"
+  when: ansible_distribution != "Fedora"
 
 - name: perform a yum update
   yum:
