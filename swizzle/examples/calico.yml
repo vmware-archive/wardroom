@@ -1,4 +1,6 @@
 ---
+# This is an example of an inventory file that can be used with provision.py
+# It contains jinja variables that are substitued by provision.py
 all:
   vars:
     docker_debian_version: "18.03.1~ce~3-0~ubuntu"

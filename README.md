@@ -1,37 +1,50 @@
-wardroom
-========
+# wardroom
 
-A tool for creating Kubernetes-ready base operating system images. wardroom leverages [Packer](https://github.com/hashicorp/packer) to build golden images of Kubernetes deployments across a wide variety of operating systems as well as image formats. This repo is the basis for the images used in Heptio's [aws-quickstart](https://github.com/heptio/aws-quickstart).
+Wardroom provides tooling that helps simplify the deployment of a Kubernetes cluster. More
+specifically, Wardroom provides the following functionality:
 
-supported operating systems
----------------------------
+* **Image Building**: Building of Kubernetes-ready base operating system images using Packer and Ansible.
+* **Deployment Orchestration**: Ansible-based orchestration to deploy highly-available Kubernetes
+  clusters using kubeadm.
 
-- Ubuntu 16.04 (Xenial)
-- Ubuntu 18.04 (Bionic)
-- CentOS 7
+Both use cases share a common set of [Ansible](https://github.com/ansible/ansible) roles that can
+be found in the [ansible](./ansible) directory.
 
-currently supported image formats (more to follow)
---------------------------------------------------
+## Image Building
 
-- AMI
+Wardroom leverages [Packer](https://github.com/hashicorp/packer) to build golden images of
+Kubernetes deployments across a wide variety of operating systems as well as image formats. During
+the build phase, Wardroom leverages [Ansible](https://github.com/ansible/ansible) to configure the
+base operating system and produce the Kubernetes-ready golden image.
 
-image building
---------------
+This functionality is used to create base images for the Heptio
+[aws-quickstart](https://github.com/heptio/aws-quickstart).
 
-All images are built with Packer, and configuration and details may be found in the [packer](./packer) directory.
+### Supported Image Formats
 
-contributing
-------------
+* AMI
 
-See our [contributing](CONTRIBUTING.md) guidelines and our [code of conduct](CODE-OF-CONDUCT.md). Contributions welcome by all.
+### Supported Operating Systems
 
-swizzle
--------
+* Ubuntu 16.04 (Xenial)
+* Ubuntu 18.04 (Bionic)
+* CentOS 7
 
-The [swizzle](./swizzle) directory is a sample implementation of how one might further leverage the [ansible](https://www.ansible.com/) playbooks therein to deploy Kubernetes. As this is a proof of concept, please be aware that this code is subject to change. There is a desire to remove this code once further rigor around kubeadm HA strategies are in place.
+## Deployment Orchestration
 
-development
------------
+The [swizzle](./swizzle) directory contains an Ansible playbook that can be used to orchestrate the
+deployment of a Kubernetes cluster using kubeadm.
+
+## Documentation
+
+Documentation and usage information can be found in the [docs](./docs) directory.
+
+## Contributing
+
+See our [contributing](CONTRIBUTING.md) guidelines and our [code of conduct](CODE-OF-CONDUCT.md).
+Contributions welcome by all.
+
+## Development
 
 [Vagrant](https://www.vagrantup.com/) may be used to test local ansible playbook development. In this scenario, Vagrant makes use of the ansible provisioner to configure the resulting operating system image. To test all operating systems simultaneously:
 
