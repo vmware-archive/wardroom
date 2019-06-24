@@ -19,6 +19,30 @@
     immediate: True
   when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 
+- name: ensure etcd pki directory exists
+  file:
+    dest: /etc/kubernetes/pki/etcd
+    state: directory
+
+- name: slurp the client cert and key for etcd communication
+  slurp:
+    src: "/etc/kubernetes/pki/{{ item }}"
+  with_items:
+    - apiserver-etcd-client.crt
+    - apiserver-etcd-client.key
+    - etcd/ca.crt
+  register: etcd_certs
+  delegate_to: "{{ groups['etcd']|first }}"
+  run_once: True
+
+- name: distribute the certificates
+  copy:
+    dest: "{{ item.source }}"
+    content: "{{ item.content | b64decode }}"
+    mode: 0700 # TODO: check these permissions
+  with_items: "{{ etcd_certs.results }}"
+  no_log: True
+  
 - include_tasks: install.yml
   when: wardroom_action == 'install'
 

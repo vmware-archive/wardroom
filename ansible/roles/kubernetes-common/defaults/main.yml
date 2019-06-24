@@ -21,3 +21,6 @@ kubernetes_common_kubeadm_config:
   etcd:
     external:
       endpoints: "{{ etcd_client_endpoints }}"
+      caFile: /etc/kubernetes/pki/etcd/ca.crt
+      certFile: /etc/kubernetes/pki/apiserver-etcd-client.crt
+      keyFile: /etc/kubernetes/pki/apiserver-etcd-client.key

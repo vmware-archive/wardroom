@@ -1,5 +1,25 @@
 ---
 etcd_enable: True
-etcd_cluster_token: 444fddcc-beae-45bc-9da6-d941d446b595
 etcd_interface: eth0
-etcd_version: v3.2.10
+# The etcd serving certificate must have the hostname and IP of all the etcd members.
+# This is because of a bug documented here: https://github.com/kubernetes/kubernetes/issues/72102
+etcd_server_cert_sans_hostnames: "{{ groups['etcd'] | list | sort }}"
+etcd_server_cert_sans_ips: "{{ groups['etcd'] | map('extract', hostvars, ['ansible_' + etcd_interface, 'ipv4', 'address']) | list | sort }}"
+etcd_server_cert_sans: "{{ etcd_server_cert_sans_hostnames + etcd_server_cert_sans_ips }}"
+etcd_kubeadm_config:
+  apiVersion: kubeadm.k8s.io/v1beta1
+  kind: ClusterConfiguration
+  etcd:
+    local:
+      serverCertSANs: "{{ etcd_server_cert_sans }}"
+      peerCertSANs:
+      - "{{ inventory_hostname }}"
+      - "{{ hostvars[inventory_hostname]['ansible_' + etcd_interface]['ipv4']['address'] }}"
+      extraArgs:
+        initial-cluster: "{{ etcd_cluster_endpoints }}"
+        initial-cluster-state: new
+        name: "{{ inventory_hostname }}"
+        listen-peer-urls: "https://{{ hostvars[inventory_hostname]['ansible_' + etcd_interface]['ipv4']['address'] }}:2380"
+        listen-client-urls: "https://{{ hostvars[inventory_hostname]['ansible_' + etcd_interface]['ipv4']['address'] }}:2379"
+        advertise-client-urls: "https://{{ hostvars[inventory_hostname]['ansible_' + etcd_interface]['ipv4']['address'] }}:2379"
+        initial-advertise-peer-urls: "https://{{ hostvars[inventory_hostname]['ansible_' + etcd_interface]['ipv4']['address'] }}:2380"
