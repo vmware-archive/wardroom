@@ -46,7 +46,7 @@
     - role: common
       when: common_enable|bool
     - role: etcd
-    
+
   tags:
     - etcd
 
@@ -60,6 +60,8 @@
   tags:
     - kubernetes-master
 
+- import_playbook: add-nodes.yml
+
 - name: install CNI
   hosts: all
   become: yes
@@ -67,8 +69,6 @@
     - kubernetes-cni
   tags:
     - kubernetes-cni
-
-- import_playbook: add-nodes.yml
 
 - name: setup kubernetes users
   hosts: masters
