@@ -1,0 +1,8 @@
+---
+kubernetes_common_api_fqdn: "loadbalancer.dns.name.here"
+kubernetes_cni_plugin: calico
+kubernetes_common_kubeadm_config:
+  networking:
+    podSubnet: "192.168.0.0/16"
+kubernetes_users:
+- { user: ubuntu, group: ubuntu, home: /home/ubuntu }
