@@ -1,5 +1,7 @@
 ---
 docker_enable: True
 docker_debian_version: '5:18.09.5~3-0~ubuntu-{{ ansible_distribution_release | lower }}'
-docker_redhat_version: '18.09.5-3.el7'
+docker_redhat_version: '18.09.6-3*'
 docker_logging_max_size: 100m
+docker_channel: stable
+docker_distribution_release_version: "{{ ansible_distribution_major_version }}"
