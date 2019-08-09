@@ -90,7 +90,7 @@ The following example shows how to set the pod CIDR in the `extra-vars.yml` file
 ```yaml
 kubernetes_common_kubeadm_config:
   networking:
-    podSubnet: "172.16.0.0/16"
+    podSubnet: "192.168.0.0/16"
 ```
 
 The configuration stanza shown above **must** be included in the `extra-vars.yml` file, as the default `kubeadm` configuration does not specify this value (and this value is required for most CNI plugins).
@@ -99,7 +99,7 @@ The configuration stanza shown above **must** be included in the `extra-vars.yml
 
 Wardroom provides a mechanism to modify the YAML deployment manfiests of the CNI plugin before installing it in the cluster. This mechanism is implemented as an Ansible library, which allows users to express conditions as well as modifications using JSONPath syntax.
 
-The following example shows how to set the `CALICO_IPV4POOL_CIDR` environment variable in the Calico deployment manifests (this example would be _required_ if a user is not using the default CIDR of 192.168.0.0/16). This would be defined in the `extra-vars.yml` file:
+The following example shows how to set the `CALICO_IPV4POOL_CIDR` environment variable in the Calico deployment manifests (this example would be _required_ if a user is not using the default CIDR of 192.168.0.0/16). In addition to specifying the `podSubnet` value as outlined above, users would also need to add this in the `extra-vars.yml` file:
 
 ```yaml
 kubernetes_cni_calico_manifest_mods:
