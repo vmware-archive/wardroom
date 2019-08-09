@@ -25,3 +25,14 @@
   retries: 10
   delay: 5
   when: kubernetes_cni_calico_install_calicoctl is defined and kubernetes_cni_calico_install_calicoctl|bool == True
+
+- name: open BGP ports
+  firewalld:
+    port: "{{ item }}"
+    permanent: yes
+    state: enabled
+    immediate: True
+  with_items:
+  - "179/tcp"
+  - "179/udp"
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
