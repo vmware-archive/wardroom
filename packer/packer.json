@@ -4,7 +4,7 @@
     "aws_secret_key": "",
     "aws_region": "us-east-1",
     "build_version": null,
-    "kubernetes_version": "1.13.2-00",
+    "kubernetes_version": "1.14.6-00",
     "kubernetes_cni_version": "0.6.0-00",
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}"
   },
