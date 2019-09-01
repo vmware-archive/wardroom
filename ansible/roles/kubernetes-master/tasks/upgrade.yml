@@ -19,6 +19,8 @@
 
 - name: add all of the kubernetes add-ons
   command: "kubeadm init phase addon all --config /etc/kubernetes/kubeadm.conf"
+  delegate_to: "{{ groups['primary_master']|first }}"
+  run_once: True
   retries: 5
   delay: 3
 
