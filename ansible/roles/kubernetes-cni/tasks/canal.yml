@@ -13,6 +13,7 @@
   delegate_to: "{{ groups['masters'][0] }}"
   retries: 10
   delay: 5
+  when: (item is defined) and (item != "") and (item is not none)
   with_items:
   - "{{ kubernetes_cni_canal_rbac_manifest_url }}"
   - /tmp/canal.yml
