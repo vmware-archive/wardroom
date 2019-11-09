@@ -19,6 +19,11 @@
     immediate: True
   when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 
+- name: drop api-server audit policy template
+  template:
+    dest: /etc/kubernetes/apiserver-audit-policy.yaml
+    src: etc/kubernetes/apiserver-audit-policy.yaml
+
 - include_tasks: install.yml
   when: wardroom_action == 'install'
 

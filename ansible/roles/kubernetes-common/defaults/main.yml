@@ -17,6 +17,22 @@ kubernetes_common_kubeadm_config:
   controlPlaneEndpoint: "{{ kubernetes_common_api_fqdn }}"
   apiServerExtraArgs:
     "endpoint-reconciler-type": "lease"
+    "audit-policy-file": "/etc/kubernetes/apiserver-audit-policy.yaml"
+    "audit-log-path": "/var/log/kubernetes/kube-apiserver-audit.log"
+    "audit-log-maxage": "30" # days
+    "audit-log-maxsize": "100" # megabytes
+    "audit-log-maxbackup": "1"
+  apiServerExtraVolumes:
+  - name: audit-policy
+    hostPath: /etc/kubernetes/apiserver-audit-policy.yaml
+    mountPath: /etc/kubernetes/apiserver-audit-policy.yaml
+    writable: false
+    pathType: File
+  - name: audit-logs
+    hostPath: /var/log/kubernetes
+    mountPath: /var/log/kubernetes
+    writable: true
+    pathType: DirectoryOrCreate
   apiServerCertSANs: "{{ kubernetes_common_api_ip | kube_lookup_hostname(kubernetes_common_api_fqdn, True) }}"
   etcd:
     external:
