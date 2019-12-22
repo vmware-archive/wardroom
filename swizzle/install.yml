@@ -63,7 +63,7 @@
 - import_playbook: add-nodes.yml
 
 - name: install CNI
-  hosts: all
+  hosts: masters
   become: yes
   roles:
     - kubernetes-cni
