@@ -1,5 +1,10 @@
 ---
-- name: add new control plane manifests
+- name: update kubelet config
+  command: "kubeadm init phase kubelet-start --config /etc/kubernetes/kubeadm.conf"
+  retries: 5
+  delay: 3
+
+- name: update new control plane manifests
   command: "kubeadm init phase control-plane all --config /etc/kubernetes/kubeadm.conf"
   retries: 5
   delay: 3
@@ -16,6 +21,11 @@
   delay: 1
   run_once: True
   delegate_to: "{{ groups['primary_master']|first }}"
+
+- name: upload cluster configmaps
+  command: "kubeadm init phase upload-config all --config /etc/kubernetes/kubeadm.conf"
+  retries: 5
+  delay: 3
 
 - name: add all of the kubernetes add-ons
   command: "kubeadm init phase addon all --config /etc/kubernetes/kubeadm.conf"

@@ -1,0 +1,16 @@
+---
+kubernetes_common_kubeadm_config_initconfiguration:
+  apiVersion: kubeadm.k8s.io/v1beta1
+  kind: InitConfiguration
+
+kubernetes_common_kubeadm_config_joinconfiguration:
+  apiVersion: kubeadm.k8s.io/v1beta1
+  kind: JoinConfiguration
+  discovery:
+    bootstrapToken:
+      token: "{{ hostvars[groups['primary_master'][0]]['generated_token']['stdout'] }}"
+      apiServerEndpoint: "{{ kubernetes_common_api_fqdn }}:6443"
+      unsafeSkipCAVerification: true
+  nodeRegistration:
+    kubeletExtraArgs:
+      feature-gates: TTLAfterFinished=true

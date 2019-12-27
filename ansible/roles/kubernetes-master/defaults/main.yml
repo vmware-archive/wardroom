@@ -1,1 +1,21 @@
 ---
+kubernetes_common_kubeadm_config_clusterconfiguration:
+  apiVersion: kubeadm.k8s.io/v1beta1
+  kind: ClusterConfiguration
+  kubernetesVersion: 1.15.3
+  controlPlaneEndpoint: "{{ kubernetes_common_api_fqdn }}"
+  apiServer:
+#    certSANs: "{{ kubernetes_common_api_ip | kube_lookup_hostname(kubernetes_common_api_fqdn, True) }}"  # Otherwise can't override with merge
+    extraArgs:
+      "endpoint-reconciler-type": "lease"
+  etcd:
+    external:
+      endpoints: "{{ etcd_client_endpoints }}"
+
+kubernetes_common_kubeadm_config_kubeletconfiguration:
+  apiVersion: kubelet.config.k8s.io/v1beta1
+  kind: KubeletConfiguration
+
+kubernetes_common_kubeadm_config_initconfiguration:
+  apiVersion: kubeadm.k8s.io/v1beta1
+  kind: InitConfiguration
