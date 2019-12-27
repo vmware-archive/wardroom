@@ -1,13 +1,15 @@
 ---
-- name: check whether we have joined this node
-  shell: "/usr/bin/docker ps | /bin/grep kube-proxy"
-  register: kube_proxy_running
-  ignore_errors: True
+#- name: check whether we have joined this node
+#  shell: "/usr/bin/docker ps | /bin/grep kube-proxy"
+#  register: kube_proxy_running
+#  ignore_errors: True
 
+- name: update kubeadm template
+  template:
+    src: etc/kubernetes/kubeadm.conf
+    dest: /etc/kubernetes/kubeadm.conf
+
+# Note - always run this, updates kubeadm and kubelet config with any changes
+# Note - would be nice to only do if kubeadm template has changed, but it always changes as it contains join token
 - name: join nodes to masters by fqdn
-  command: "/usr/bin/kubeadm join {{ kubernetes_common_api_fqdn }}:6443 --token='{{ hostvars[groups['primary_master'][0]]['generated_token']['stdout'] }}' --discovery-token-unsafe-skip-ca-verification --ignore-preflight-errors=all"
-  when: kube_proxy_running is failed and ((kubernetes_common_api_fqdn is defined) and (kubernetes_common_api_fqdn != None) and (kubernetes_common_api_fqdn|trim != ''))
-
-- name: join nodes to masters by ip
-  command: "/usr/bin/kubeadm join {{ kubernetes_common_api_ip }}:6443 --token='{{ hostvars[groups['primary_master'][0]]['generated_token']['stdout'] }}' --discovery-token-unsafe-skip-ca-verification --ignore-preflight-errors=all"
-  when: kube_proxy_running is failed and ((kubernetes_common_api_fqdn is not defined) or (kubernetes_common_api_fqdn == None) or (kubernetes_common_api_fqdn|trim == ''))
+  command: "/usr/bin/kubeadm join phase kubelet-start --config /etc/kubernetes/kubeadm.conf"

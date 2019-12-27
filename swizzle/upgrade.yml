@@ -14,6 +14,16 @@
   - role: kubernetes-master
   tags: ['upgrade-control-plane']
 
+- name: create a kubeadm token
+  hosts: primary_master
+  become: yes
+  tasks:
+  - name: generate a kubeadm token
+    command: "/usr/bin/kubeadm token create --config /etc/kubernetes/kubeadm.conf --kubeconfig /etc/kubernetes/admin.conf"
+    register: generated_token
+    run_once: True
+    delegate_to: "{{ groups['primary_master']|first }}"
+
 - name: update the workers
   hosts: nodes
   become: yes

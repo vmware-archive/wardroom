@@ -6,6 +6,11 @@
       Please update your inventories
   when: kubernetes_master_kubeadm_config is defined
 
+- name: drop kubeadm template
+  template:
+    src: etc/kubernetes/kubeadm.conf
+    dest: /etc/kubernetes/kubeadm.conf
+
 - name: determine whether kubeadm needs to be run
   stat:
     path: /etc/kubernetes/manifests/kube-apiserver.yaml

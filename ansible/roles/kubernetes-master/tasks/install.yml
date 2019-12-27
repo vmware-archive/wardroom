@@ -46,3 +46,16 @@
 - name: initialize secondary masters
   command: "/usr/bin/kubeadm init --config=/etc/kubernetes/kubeadm.conf --ignore-preflight-errors=all"
   when: kubeadm_apiserver_manifest.stat.exists == False and inventory_hostname != groups['primary_master']|first
+
+- name: Update kubelet config if already running
+  command: "kubeadm init phase kubelet-start --config /etc/kubernetes/kubeadm.conf"
+  when: kubeadm_apiserver_manifest.stat.exists == True
+
+- name: Update control plane manifests if already running
+  command: "kubeadm init phase control-plane all --config /etc/kubernetes/kubeadm.conf"
+  when: kubeadm_apiserver_manifest.stat.exists == True
+
+- name: Upload cluster configmaps
+  command: "kubeadm init phase upload-config all --config /etc/kubernetes/kubeadm.conf"
+  retries: 5
+  delay: 3

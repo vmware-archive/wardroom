@@ -63,16 +63,5 @@
   - "10250-10255/tcp"
   when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 
-- name: drop kubeadm template
-  template:
-    src: etc/kubernetes/kubeadm.conf
-    dest: /etc/kubernetes/kubeadm.conf
-
-- name: write kubelet configuration
-  template:
-    dest: /var/lib/kubelet/config.yaml
-    src: var/lib/kubelet/config.yaml
-  when: kubernetes_common_kubelet_config
-
 - name: flush handlers
   meta: flush_handlers
